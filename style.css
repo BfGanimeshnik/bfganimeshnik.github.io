@@ -726,7 +726,7 @@ li span:hover:after {
     display: none;
 } */
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 1200px) {
 
     /* For mobile phones: */
     .nav-items {
