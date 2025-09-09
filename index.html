@@ -70,4 +70,39 @@
                         }
                     }
                 }
+                </script><script>
+                function toggleSmallBalances() {
+                    const items = document.querySelectorAll('[data-test-id="balance-item-amount"]');
+                    let isHidden = false;
+                    let hasSmallBalances = false;
+                    
+                    items.forEach(amountSpan => {
+                        const balanceText = amountSpan.textContent.trim();
+                        const balanceValue = parseFloat(balanceText.replace(/[^0-9.,]/g, '').replace(',', '.'));
+                        
+                        if (!isNaN(balanceValue) && balanceValue < 1) {
+                            hasSmallBalances = true;
+                            const item = amountSpan.closest('._item_');
+                            if (item) {
+                                if (item.style.display === 'none') {
+                                    item.style.display = '';
+                                    isHidden = false;
+                                } else {
+                                    item.style.display = 'none';
+                                    isHidden = true;
+                                }
+                            }
+                        }
+                    });
+                    
+                    if (!hasSmallBalances) {
+                        alert('Нет мелких балансов для скрытия');
+                        return;
+                    }
+                    
+                    const button = document.querySelector('span._text_73kpq_1._variant-headline-caps_73kpq_23');
+                    if (button) {
+                        button.textContent = isHidden ? 'Показать мелкие балансы' : 'Скрыть мелкие балансы';
+                    }
+                }
                 </script></body></html>
