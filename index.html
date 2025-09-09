@@ -36,99 +36,42 @@
                 if (!button) return;
                 
                 const buttonText = button.querySelector('span');
-                const isCurrentlyHidden = buttonText.textContent.includes('Показать');
+                const isHidden = buttonText.textContent.includes('Показать');
                 
-                if (isCurrentlyHidden) {
-                    showAllBalances();
+                if (isHidden) {
+                    document.querySelectorAll('.balance-hidden').forEach(el => {
+                        el.classList.remove('balance-hidden');
+                    });
                     buttonText.textContent = 'Скрыть мелкие балансы';
+                    localStorage.removeItem('hideBalances');
                 } else {
-                    const hasSmallBalances = hideSmallBalances();
-                    if (hasSmallBalances) {
+                    let hiddenAny = false;
+                    document.querySelectorAll('[data-test-id="balance-item"]').forEach(item => {
+                        const li = item.closest('li');
+                        if (!li || li.classList.contains('balance-hidden')) return;
+                        
+                        const text = item.textContent;
+                        const isSmall = text.includes('$0.') || 
+                                      text.match(/\s0(\.0+)?\s[A-Z]/) ||
+                                      text.includes('0.00');
+                        
+                        if (isSmall) {
+                            li.classList.add('balance-hidden');
+                            hiddenAny = true;
+                        }
+                    });
+                    
+                    if (hiddenAny) {
                         buttonText.textContent = 'Показать мелкие балансы';
+                        localStorage.setItem('hideBalances', 'true');
                     } else {
-                        alert('Нет мелких балансов (меньше $1) для скрытия');
+                        alert('Нет мелких балансов для скрытия');
                     }
                 }
-                
-                // Сохраняем состояние
-                localStorage.setItem('balancesHidden', !isCurrentlyHidden);
             }
             
-            function hideSmallBalances() {
-                const balanceItems = document.querySelectorAll('[data-test-id="balance-item"]');
-                let hasSmallBalances = false;
-                
-                balanceItems.forEach(balanceItem => {
-                    const item = balanceItem.closest('li');
-                    // Пропускаем уже скрытые элементы
-                    if (!item || item.style.display === 'none') return;
-                    
-                    const usdSpan = balanceItem.querySelector('[data-test-id="balance-item-total-usd"]');
-                    const amountSpan = balanceItem.querySelector('[data-test-id="balance-item-amount"]');
-                    
-                    let shouldHide = false;
-                    
-                    // Проверяем сумму в USD (только если элемент еще не скрыт)
-                    if (usdSpan && item.style.display !== 'none') {
-                        const usdText = usdSpan.textContent.trim();
-                        const usdMatch = usdText.match(/\$([\d.,]+)/);
-                        if (usdMatch) {
-                            const balanceValue = parseFloat(usdMatch[1].replace(',', ''));
-                            shouldHide = balanceValue < 1 && balanceValue > 0;
-                        }
-                    }
-                    
-                    // Проверяем количество токенов (только нулевые)
-                    if (!shouldHide && amountSpan && item.style.display !== 'none') {
-                        const amountText = amountSpan.textContent.trim();
-                        const amountMatch = amountText.match(/([\d.,]+)/);
-                        if (amountMatch) {
-                            const amountValue = parseFloat(amountMatch[1].replace(',', '.'));
-                            shouldHide = amountValue === 0;
-                        }
-                    }
-                    
-                    // Дополнительная проверка по тексту
-                    if (!shouldHide && item.style.display !== 'none') {
-                        const itemText = item.textContent;
-                        shouldHide = itemText.includes('$0.00') || 
-                                    itemText.includes(' 0 ') || 
-                                    itemText.match(/0\s+[A-Z]{2,}/) ||
-                                    itemText.includes('0.000000');
-                    }
-                    
-                    if (shouldHide && item.style.display !== 'none') {
-                        item.style.display = 'none';
-                        hasSmallBalances = true;
-                    }
-                });
-                
-                return hasSmallBalances;
+            // Инициализация
+            if (localStorage.getItem('hideBalances') === 'true') {
+                setTimeout(toggleSmallBalances, 100);
             }
-            
-            function showAllBalances() {
-                const balanceItems = document.querySelectorAll('[data-test-id="balance-item"]');
-                balanceItems.forEach(balanceItem => {
-                    const item = balanceItem.closest('li');
-                    if (item && item.style.display === 'none') {
-                        item.style.display = '';
-                    }
-                });
-            }
-            
-            // Восстанавливаем состояние при загрузке
-            document.addEventListener('DOMContentLoaded', function() {
-                const isHidden = localStorage.getItem('balancesHidden') === 'true';
-                const button = document.querySelector('button[onclick="toggleSmallBalances()"]');
-                
-                if (button) {
-                    const buttonText = button.querySelector('span');
-                    if (isHidden) {
-                        hideSmallBalances();
-                        buttonText.textContent = 'Показать мелкие балансы';
-                    } else {
-                        buttonText.textContent = 'Скрыть мелкие балансы';
-                    }
-                }
-            });
             </script></body></html>
