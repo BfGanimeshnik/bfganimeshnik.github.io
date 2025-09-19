@@ -1,0 +1,359 @@
+{
+    "items": [
+        {
+            "name": "Мякоть сластены",
+            "price": 7600,
+            "rarity": "common"
+        },
+        {
+            "name": "Мякоть солевика",
+            "price": 1800,
+            "rarity": "common"
+        },
+        {
+            "name": "Аномальная пыль",
+            "price": 310,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Аномальная плазма",
+            "price": 3000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Остатки приборов «Шепота»",
+            "price": 40000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Странный артефакт",
+            "price": 1500,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Огромный артефактный фрагмент",
+            "price": 1000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Пурпурные минералы",
+            "price": 400,
+            "rarity": "common"
+        },
+        {
+            "name": "Гнилые доски",
+            "price": 500,
+            "rarity": "common"
+        },
+        {
+            "name": "Клей",
+            "price": 500,
+            "rarity": "common"
+        },
+        {
+            "name": "Сталь",
+            "price": 300,
+            "rarity": "common"
+        },
+        {
+            "name": "Батарея холодного синтеза",
+            "price": 7000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Продвинутые запчасти",
+            "price": 50000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Продвинутые инструменты",
+            "price": 40000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Стандартные запчасти",
+            "price": 16000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Стандартные инструменты",
+            "price": 12000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Нестабильные аномальные батареи",
+            "price": 35000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Набор компонентов оружия мастер",
+            "price": 22000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Перегрузки",
+            "price": 40000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Новогодний кейс 7-го уровня",
+            "price": 150000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Забытые припасы",
+            "price": 46000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Черные презенты",
+            "price": 45000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Тактический запас",
+            "price": 44000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Старый скарб",
+            "price": 35000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Янтарная полынь",
+            "price": 15000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Чертоцветы",
+            "price": 1500,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Бледнолист",
+            "price": 125,
+            "rarity": "common"
+        },
+        {
+            "name": "Водонос",
+            "price": 175,
+            "rarity": "common"
+        },
+        {
+            "name": "Бутылки",
+            "price": 500,
+            "rarity": "common"
+        },
+        {
+            "name": "Бутылки с водой",
+            "price": 550,
+            "rarity": "common"
+        },
+        {
+            "name": "Любое мясо (не жаренное)",
+            "price": 4000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Соль",
+            "price": 1000,
+            "rarity": "common"
+        },
+        {
+            "name": "Специи",
+            "price": 4000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Дрожжи",
+            "price": 4000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Помидоры",
+            "price": 2000,
+            "rarity": "common"
+        },
+        {
+            "name": "Боевой горох",
+            "price": 2000,
+            "rarity": "common"
+        },
+        {
+            "name": "Животный жир",
+            "price": 1000,
+            "rarity": "common"
+        },
+        {
+            "name": "Банка с пшеном",
+            "price": 3000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Гипофиз мертвеца",
+            "price": 6000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Отличная тушенка",
+            "price": 2000,
+            "rarity": "common"
+        },
+        {
+            "name": "Колбасная нарезка",
+            "price": 1200,
+            "rarity": "common"
+        },
+        {
+            "name": "Батареи хладного синтеза",
+            "price": 7000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Сластена",
+            "price": 7700,
+            "rarity": "rare"
+        },
+        {
+            "name": "Куборбуз",
+            "price": 3000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Кофе",
+            "price": 5000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Золотые минералы",
+            "price": 5000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Азотная кислота",
+            "price": 4000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Аммиак",
+            "price": 10000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Копыта",
+            "price": 5000,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Ткань",
+            "price": 750,
+            "rarity": "common"
+        },
+        {
+            "name": "Серная кислота",
+            "price": 500,
+            "rarity": "common"
+        },
+        {
+            "name": "Странные артефакты",
+            "price": 750,
+            "rarity": "common"
+        },
+        {
+            "name": "Алюминиевый порошок",
+            "price": 200,
+            "rarity": "common"
+        },
+        {
+            "name": "Огромные артефактные фрагменты",
+            "price": 1200,
+            "rarity": "common"
+        },
+        {
+            "name": "Протоартефакты",
+            "price": 2500,
+            "rarity": "uncommon"
+        },
+        {
+            "name": "Премиум на 180 дней",
+            "price": 10000000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Премиум на 90 дней",
+            "price": 6400000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Премиум на 30 дней",
+            "price": 2800000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Сезонный пропуск",
+            "price": 6800000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Уровень сезона",
+            "price": 300000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Альбатрос-перехватчик",
+            "price": 17500000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Альбатрос-разведчик",
+            "price": 6000000,
+            "rarity": "epic"
+        },
+        {
+            "name": "КЗ-4",
+            "price": 10000000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "Эльбрус",
+            "price": 22500000,
+            "rarity": "legendary"
+        },
+        {
+            "name": "QBU",
+            "price": 5400000,
+            "rarity": "epic"
+        },
+        {
+            "name": "СВЧ",
+            "price": 6200000,
+            "rarity": "epic"
+        },
+        {
+            "name": "ВСК",
+            "price": 3400000,
+            "rarity": "epic"
+        },
+        {
+            "name": "Jagdkommando",
+            "price": 1200000,
+            "rarity": "rare"
+        },
+        {
+            "name": "КСМ",
+            "price": 1800000,
+            "rarity": "rare"
+        },
+        {
+            "name": "Берлога 6",
+            "price": 3200000,
+            "rarity": "epic"
+        },
+        {
+            "name": "PIONER",
+            "price": 12500000,
+            "rarity": "legendary"
+        }
+    ]
+}
