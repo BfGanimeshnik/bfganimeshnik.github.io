@@ -2,13 +2,33 @@
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="https://vitejs.dev/logo.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BfG_Animeshnik | World Line</title>
+    <title>BfG_Animeshnik | World Line 1.048596</title>
+    <link rel="icon" type="image/svg+xml" href="https://vitejs.dev/logo.svg" />
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Шрифт Share Tech Mono (стиль Steins;Gate) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+
+    <!-- Babel для компиляции JSX в браузере -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Import map для React и lucide-react -->
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+          "lucide-react": "https://esm.sh/lucide-react@0.344.0"
+        }
+      }
+    </script>
+
+    <!-- Конфиг Tailwind (цвета, шрифты, анимации) -->
     <script>
       tailwind.config = {
         theme: {
@@ -18,160 +38,178 @@
             },
             colors: {
               'sg-orange': '#ff7e00',
-              'sg-dark': '#0a0a0a',
-              'sg-gray': '#1a1a1a',
             },
             animation: {
               'spin-slow': 'spin 20s linear infinite',
               'spin-slow-reverse': 'spin 25s linear infinite reverse',
-              'pulse-fast': 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-              'flicker': 'flicker 0.15s infinite',
-            },
-            keyframes: {
-              flicker: {
-                '0%': { opacity: 0.9 },
-                '50%': { opacity: 1.0 },
-                '100%': { opacity: 0.8 },
-              }
             }
           }
         }
       }
     </script>
-    <style>
-      body {
-        background-color: #050505;
-        color: #e0e0e0;
-        font-family: 'Share Tech Mono', monospace;
-        overflow-x: hidden;
-      }
-      /* Custom Scrollbar */
-      ::-webkit-scrollbar {
-        width: 8px;
-      }
-      ::-webkit-scrollbar-track {
-        background: #0a0a0a;
-      }
-      ::-webkit-scrollbar-thumb {
-        background: #333;
-        border-radius: 4px;
-      }
-      ::-webkit-scrollbar-thumb:hover {
-        background: #ff7e00;
-      }
-    </style>
-    <script type="importmap">
-      {
-        "imports": {
-          "react": "https://esm.sh/react@18.2.0",
-          "react-dom": "https://esm.sh/react-dom@18.2.0",
-          "lucide-react": "https://esm.sh/lucide-react@0.344.0"
-        }
-      }
-    </script>
   </head>
-  <body>
+  <body class="bg-[#050505] text-gray-200 font-mono">
     <div id="root"></div>
-    <script type="module">
-      import React from 'react';
-      import ReactDOM from 'react-dom';
-      import { Terminal, Gamepad2, Github, Send, MessageSquare } from 'lucide-react';
 
-      // Placeholder components (implement as needed; these are simplified for optimization)
+    <script type="text/babel" data-type="module">
+      import React, { useState, useEffect } from 'react';
+      import { createRoot } from 'react-dom/client';
+      import { Terminal, Settings, ExternalLink, Gamepad2, Github, Send, MessageSquare } from 'lucide-react';
+
+      // --- Константы ---
+      const USER_INFO = {
+        nickname: "BfG_Animeshnik",
+        tagline: "Безумный Ученый / Mad Scientist",
+        description: "Исследователь временных линий. Любитель аниме, игр и кодинга. Добро пожаловать в Лабораторию Гаджетов Будущего.",
+        divergenceNumber: "1.048596",
+        avatarUrl: "https://i.pinimg.com/736x/2e/03/43/2e03434647317208d95b546e4c754602.jpg"
+      };
+
+      const SOCIAL_LINKS = [
+        {
+          id: 'steam',
+          title: 'Steam Profile',
+          url: 'https://steamcommunity.com/id/bfg_anime',
+          icon: Gamepad2,
+        },
+        {
+          id: 'telegram',
+          title: 'Telegram',
+          url: 'https://t.me/bfg_animeshnik', // Замени на реальную ссылку
+          icon: Send,
+        },
+        {
+          id: 'discord',
+          title: 'Discord',
+          url: 'https://discord.gg/yourserver', // Замени на реальную
+          icon: MessageSquare,
+        },
+        {
+          id: 'github',
+          title: 'GitHub',
+          url: 'https://github.com/bfg-animeshnik', // Замени на свой профиль
+          icon: Github,
+        }
+      ];
+
+      // --- Компоненты ---
+
       const Scanlines = () => (
-        <div 
-          className="fixed inset-0 pointer-events-none opacity-20 z-0"
-          style={{
-            background: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.5) 1px, rgba(0,0,0,0.5) 2px)'
-          }}
-        />
-      );
-
-      const GearsBackground = () => (
-        <div 
-          className="absolute inset-0 opacity-10 z-0 animate-spin-slow"
-          style={{
-            background: 'radial-gradient(circle, #ff7e00 0%, transparent 70%)' // Simple placeholder; replace with SVG gears if needed
-          }}
-        />
-      );
-
-      const DivergenceMeter = () => (
-        <div className="text-sg-orange text-6xl font-bold mb-8 animate-flicker">
-          1.048596
+        <div className="fixed inset-0 z-50 pointer-events-none select-none overflow-hidden h-full w-full">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.6)_100%)]" />
+          <div 
+            className="absolute inset-0 opacity-10"
+            style={{
+              background: 'linear-gradient(rgba(18,16,16,0) 50%, rgba(0,0,0,0.25) 50%), linear-gradient(90deg, rgba(255,0,0,0.06), rgba(0,255,0,0.02), rgba(0,0,255,0.06))',
+              backgroundSize: '100% 4px, 6px 100%'
+            }}
+          />
         </div>
       );
 
-      const ProfileSection = () => {
-        const USER_INFO = {
-          nickname: "BfG_Animeshnik",
-          tagline: "Безумный Ученый / Mad Scientist",
-          description: "Исследователь временных линий. Любитель аниме, игр и кодинга. Добро пожаловать в Лабораторию Гаджетов Будущего.",
-          divergenceNumber: "1.048596",
-          avatarUrl: "https://picsum.photos/seed/bfg/400/400"
-        };
+      const GearsBackground = () => (
+        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-20 -left-20 text-gray-800/30 animate-spin-slow"><Settings size={300} strokeWidth={1} /></div>
+          <div className="absolute top-1/2 -left-10 text-gray-800/20 animate-spin-slow-reverse"><Settings size={200} strokeWidth={1.5} /></div>
+          <div className="absolute -bottom-32 -right-32 text-gray-800/30 animate-spin-slow"><Settings size={400} strokeWidth={0.5} /></div>
+          <div className="absolute top-10 right-10 text-gray-800/20 animate-spin-slow-reverse"><Settings size={120} strokeWidth={2} /></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"></div>
+        </div>
+      );
 
-        const SOCIAL_LINKS = [
-          {
-            id: 'steam',
-            title: 'Steam Profile',
-            url: 'https://steamcommunity.com/id/bfg_anime',
-            icon: Gamepad2,
-            color: 'hover:text-[#1b2838] hover:bg-[#66c0f4]'
-          },
-          {
-            id: 'telegram',
-            title: 'Telegram',
-            url: '#',
-            icon: Send,
-            color: 'hover:text-white hover:bg-[#229ED9]'
-          },
-          {
-            id: 'discord',
-            title: 'Discord',
-            url: '#',
-            icon: MessageSquare,
-            color: 'hover:text-white hover:bg-[#5865F2]'
-          },
-          {
-            id: 'github',
-            title: 'GitHub',
-            url: '#',
-            icon: Github,
-            color: 'hover:text-black hover:bg-white'
-          }
-        ];
+      const DivergenceMeter = () => {
+        const [displayNumber, setDisplayNumber] = useState("0.000000");
+        const targetNumber = USER_INFO.divergenceNumber;
+
+        useEffect(() => {
+          let iterations = 0;
+          const interval = setInterval(() => {
+            const randomNum = (Math.random() * 2).toFixed(6);
+            setDisplayNumber(randomNum);
+            iterations++;
+            if (iterations > 15) {
+              clearInterval(interval);
+              setDisplayNumber(targetNumber);
+            }
+          }, 60);
+          return () => clearInterval(interval);
+        }, [targetNumber]);
 
         return (
-          <section className="max-w-2xl mx-auto text-center px-6">
-            <img 
-              src={USER_INFO.avatarUrl} 
-              alt="Avatar" 
-              className="rounded-full w-32 h-32 mx-auto mb-4 border-2 border-sg-orange"
-            />
-            <h1 className="text-3xl mb-2">{USER_INFO.nickname}</h1>
-            <p className="text-xl mb-4 text-gray-400">{USER_INFO.tagline}</p>
-            <p className="mb-6">{USER_INFO.description}</p>
-            <div className="flex justify-center space-x-4">
-              {SOCIAL_LINKS.map((link) => (
-                <a
-                  key={link.id}
-                  href={link.url}
-                  title={link.title}
-                  className={`p-2 rounded transition-colors ${link.color}`}
-                >
-                  <link.icon size={24} />
-                </a>
-              ))}
+          <div className="flex flex-col items-center justify-center my-8 select-none">
+            <div className="text-sg-orange text-xs tracking-[0.5em] mb-2 uppercase opacity-70">Divergence Meter</div>
+            <div className="relative bg-black/60 border border-gray-800 px-6 py-4 rounded-xl shadow-[0_0_20px_rgba(255,126,0,0.2)] backdrop-blur-sm">
+              <div className="flex items-baseline space-x-1 sm:space-x-2">
+                {displayNumber.split('').map((char, i) => (
+                  <span key={i} className={`font-mono text-3xl sm:text-5xl font-bold ${char === '.' ? 'text-gray-500' : 'text-sg-orange'} drop-shadow-[0_0_8px_rgba(255,126,0,0.8)]`}>
+                    {char}
+                  </span>
+                ))}
+              </div>
+              <div className="absolute top-0 left-0 w-2 h-2 border-t border-l border-sg-orange opacity-50"></div>
+              <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-sg-orange opacity-50"></div>
+              <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-sg-orange opacity-50"></div>
+              <div className="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-sg-orange opacity-50"></div>
             </div>
-          </section>
+          </div>
         );
       };
 
-      const App = () => {
-        const [showContent, setShowContent] = React.useState(false);
+      const ProfileSection = () => (
+        <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-8">
+          <div className="relative w-40 h-40 mx-auto mb-6 group cursor-pointer">
+            <div className="absolute inset-0 rounded-full border-2 border-dashed border-sg-orange/30 animate-spin-slow"></div>
+            <div className="absolute inset-2 rounded-full border border-sg-orange/50 shadow-[0_0_15px_rgba(255,126,0,0.3)] bg-black overflow-hidden">
+              <img src={USER_INFO.avatarUrl} alt="Avatar" className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 grayscale group-hover:grayscale-0" />
+            </div>
+          </div>
 
-        React.useEffect(() => {
+          <div className="text-center space-y-4 mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tighter drop-shadow-[0_0_5px_rgba(255,255,255,0.5)]">
+              {USER_INFO.nickname}
+            </h1>
+            <p className="text-sg-orange text-lg tracking-widest uppercase">{USER_INFO.tagline}</p>
+            <div className="h-px w-24 bg-gradient-to-r from-transparent via-gray-500 to-transparent mx-auto my-4"></div>
+            <p className="text-gray-400 text-base md:text-lg leading-relaxed max-w-lg mx-auto px-4">{USER_INFO.description}</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mt-12">
+            {SOCIAL_LINKS.map(link => (
+              <a
+                key={link.id}
+                href={link.url}
+                target={link.url !== '#' ? "_blank" : undefined}
+                rel={link.url !== '#' ? "noopener noreferrer" : undefined}
+                className="group relative block p-4 border border-gray-600 hover:border-sg-orange transition-colors rounded-lg bg-black/40 backdrop-blur-sm"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4">
+                    <div className="p-2 rounded-lg bg-black/50 border border-gray-700 group-hover:border-sg-orange text-gray-300 group-hover:text-sg-orange transition-colors">
+                      <link.icon size={24} />
+                    </div>
+                    <span className="text-xl font-bold text-gray-200 group-hover:text-white tracking-wide">{link.title}</span>
+                  </div>
+                  {link.url !== '#' && <ExternalLink size={18} className="text-gray-600 group-hover:text-sg-orange transition-colors" />}
+                </div>
+                <div className="absolute top-0 right-0 w-2 h-2 border-t border-r border-gray-600 group-hover:border-sg-orange transition-colors"></div>
+                <div className="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-gray-600 group-hover:border-sg-orange transition-colors"></div>
+              </a>
+            ))}
+          </div>
+
+          <div className="mt-16 text-center">
+            <p className="text-xs text-gray-600 mb-2">Operation Skuld Status: Active</p>
+            <p className="text-2xl font-bold text-sg-orange opacity-80 tracking-widest" style={{ textShadow: '0 0 10px rgba(255, 126, 0, 0.5)' }}>
+              EL PSY KONGROO
+            </p>
+          </div>
+        </div>
+      );
+
+      const App = () => {
+        const [showContent, setShowContent] = useState(false);
+
+        useEffect(() => {
           const timer = setTimeout(() => setShowContent(true), 500);
           return () => clearTimeout(timer);
         }, []);
@@ -180,21 +218,13 @@
           <div className="relative min-h-screen w-full bg-[#050505] text-gray-200 font-mono overflow-hidden flex flex-col">
             <Scanlines />
             <GearsBackground />
-            <main
-              className={`
-                relative z-10 flex-grow flex flex-col items-center justify-start pt-10 pb-20
-                transition-opacity duration-1000 ease-in-out
-                ${showContent ? 'opacity-100' : 'opacity-0'}
-              `}
-            >
+            <main className={`relative z-10 flex-grow flex flex-col items-center justify-start pt-10 pb-20 transition-opacity duration-1000 ease-in-out ${showContent ? 'opacity-100' : 'opacity-0'}`}>
               <header className="w-full max-w-4xl px-6 flex justify-between items-center mb-4 opacity-60">
                 <div className="flex items-center space-x-2 text-xs text-sg-orange border border-sg-orange/30 px-3 py-1 rounded bg-black/40">
                   <Terminal size={14} />
                   <span>LAB_MEM_001_SYSTEM</span>
                 </div>
-                <div className="text-xs text-gray-500">
-                  {new Date().toISOString().split('T')[0]}
-                </div>
+                <div className="text-xs text-gray-500">{new Date().toISOString().split('T')[0]}</div>
               </header>
               <DivergenceMeter />
               <ProfileSection />
@@ -203,10 +233,8 @@
         );
       };
 
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        ReactDOM.render(<App />, rootElement);
-      }
+      const root = createRoot(document.getElementById('root'));
+      root.render(<App />);
     </script>
   </body>
 </html>
