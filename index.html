@@ -1,318 +1,476 @@
 <!DOCTYPE html>
 <html lang="ru">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>BfG_Animeshnik | World Line 1.048596</title>
-    <link rel="icon" type="image/svg+xml" href="https://vitejs.dev/logo.svg" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BfG_Animeshnik | World Line 1.048596</title>
+  <link rel="icon" type="image/svg+xml" href="https://vitejs.dev/logo.svg" />
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Шрифт Share Tech Mono -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
 
-    <!-- Babel -->
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
-    <!-- Import map -->
-    <script type="importmap">
-      {
-        "imports": {
-          "react": "https://esm.sh/react@18.2.0",
-          "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-          "lucide-react": "https://esm.sh/lucide-react@0.344.0"
-        }
+  <script type="importmap">
+    {
+      "imports": {
+        "react": "https://esm.sh/react@18.2.0",
+        "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+        "lucide-react": "https://esm.sh/lucide-react@0.344.0"
       }
-    </script>
+    }
+  </script>
 
-    <!-- Tailwind config -->
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: { mono: ['"Share Tech Mono"', 'monospace'] },
-            colors: { 'sg-orange': '#ff7e00' },
-            animation: {
-              'spin-slow': 'spin 20s linear infinite',
-              'spin-slow-reverse': 'spin 25s linear infinite reverse',
-            }
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { mono: ['"Share Tech Mono"', 'monospace'] },
+          colors: { 'sg-orange': '#ff7e00' },
+          animation: {
+            'spin-slow': 'spin 20s linear infinite',
+            'spin-slow-reverse': 'spin 25s linear infinite reverse',
           }
         }
       }
-    </script>
+    }
+  </script>
 
-    <!-- Глитч-анимации -->
-    <style>
-      @keyframes glitch {
-        0%, 100% { transform: translate(0); opacity: 1; text-shadow: 0 0 12px rgba(255,126,0,1); }
-        20% { transform: translate(-3px, 3px); opacity: 0.8; text-shadow: 0 0 20px rgba(255,0,0,0.8); }
-        40% { transform: translate(3px, -3px); opacity: 0.9; text-shadow: 0 0 20px rgba(0,255,0,0.8); }
-        60% { transform: translate(-2px, 2px); opacity: 0.7; text-shadow: 0 0 20px rgba(0,0,255,0.8); }
-        80% { transform: translate(2px, -2px); opacity: 0.85; }
+  <style>
+    @keyframes scan { from { background-position: 0 0; } to { background-position: 0 100%; } }
+    @keyframes glow-pulse { 0%, 100% { text-shadow: 0 0 10px rgba(255,126,0,0.5); } 50% { text-shadow: 0 0 40px rgba(255,126,0,1); } }
+    @keyframes glitch { 0%, 100% { transform: translate(0); opacity: 1; } 20% { transform: translate(-3px,3px); opacity: 0.8; } 40% { transform: translate(3px,-3px); opacity: 0.9; } 60% { transform: translate(-2px,2px); opacity: 0.7; } 80% { transform: translate(2px,-2px); opacity: 0.85; } }
+    @keyframes world-glitch { 0%, 100% { transform: translate(0); filter: brightness(1); } 10%,30%,50%,70%,90% { transform: translate(-10px,-10px); filter: brightness(1.5); } 20%,40%,60%,80% { transform: translate(10px,10px); filter: brightness(0.8); } }
+    @keyframes screen-flash { 0%, 100% { opacity: 0; } 50% { opacity: 0.4; } }
+    @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(20px); } 15% { opacity: 1; transform: translateY(0); } 85% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+    .glitching span { animation: glitch 0.15s infinite; animation-delay: calc(var(--i) * 50ms); }
+    .crt-overlay::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%); pointer-events: none; z-index: 50; }
+    .crt-overlay::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px); pointer-events: none; z-index: 50; }
+    .avatar-clip { clip-path: circle(50% at 50% 50%); }
+  </style>
+</head>
+<body class="bg-[#050505] text-gray-200 font-mono min-h-screen relative">
+  <div id="root"></div>
+
+  <script type="text/babel" data-type="module">
+    import React, { useState, useEffect, useRef } from 'react';
+    import { createRoot } from 'react-dom/client';
+    import { Terminal, Settings, ExternalLink, Gamepad2, Github, Send, MessageSquare, Phone, RefreshCw } from 'lucide-react';
+
+    // ──────────────────────────────────────────────
+    // ЧЛЕНЫ ЛАБОРАТОРИИ + ПАСХАЛКИ
+    // ──────────────────────────────────────────────
+    const LAB_MEMBERS = [
+      { 
+        id: 'okabe',   
+        name: 'Okabe Rintarou',   
+        title: '狂気のマッドサイエンティスト / Безумный Учёный', 
+        color: '#ff7e00', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/2/26/Rintaro_Okabe_Portrait.png",
+        easterEgg: { phrase: "El Psy Kongroo!", color: "#ff7e00" }
+      },
+      { 
+        id: 'mayuri',  
+        name: 'Shiina Mayuri',    
+        title: '宇宙最強のコスプレイヤー / Самая лучшая косплейщица во Вселенной', 
+        color: '#ff99cc', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/e/e6/Mayuri_Shiina_Portrait.png",
+        easterEgg: { phrase: "Tuturu~ ☆", color: "#ff99cc" }
+      },
+      { 
+        id: 'kurisu',  
+        name: 'Makise Kurisu',    
+        title: '天才少女 / Гениальная девушка', 
+        color: '#ff3366', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/0/01/Kurisu_Makise_Portrait.png",
+        easterEgg: { phrase: "バカ！ / Идиот!", color: "#ff3366" }
+      },
+      { 
+        id: 'daru',    
+        name: 'Hashida Itaru',    
+        title: 'スーパーハッカー / Супер-хакер 2000%', 
+        color: '#66ccff', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/a/ae/Daru_full_profile.png",
+        easterEgg: { phrase: "2000% confirmed!", color: "#66ccff" }
+      },
+      { 
+        id: 'luka',    
+        name: 'Urushibara Luka',  
+        title: '優しい心の持ち主 / Обладатель нежного сердца', 
+        color: '#99ff99', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/e/e7/Luka_Urushibara_Portrait.png",
+        easterEgg: { phrase: "У меня... получилось...", color: "#99ff99" }
+      },
+      { 
+        id: 'faris',   
+        name: 'Akiha Rumiho',     
+        title: 'にゃんにゃんメイド / Нян-нян горничная', 
+        color: '#ffcc66', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/6/6a/Faris_Portrait.png",
+        easterEgg: { phrase: "Nya~n!", color: "#ffcc66" }
+      },
+      { 
+        id: 'moeka',   
+        name: 'Kiryuu Moeka',     
+        title: '沈黙の狂信者 / Молчаливая фанатичка', 
+        color: '#cc99ff', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/c/c0/Moeka_Kiryu_Portrait.png",
+        easterEgg: { phrase: "... FB ...", color: "#cc99ff" }
+      },
+      { 
+        id: 'suzuha',  
+        name: 'Amane Suzuha',     
+        title: '未来からの戦士 / Воин из будущего', 
+        color: '#66ffcc', 
+        img: "https://static.wikia.nocookie.net/steins-gate/images/2/27/Suzuha_Amane_Portrait.png",
+        easterEgg: { phrase: "Время пришло!", color: "#66ffcc" }
       }
-      .glitching span {
-        animation: glitch 0.15s infinite;
-        animation-delay: calc(var(--i) * 50ms);
-      }
-      @keyframes scan {
-        from { background-position: 0 0; }
-        to { background-position: 0 100%; }
-      }
-      @keyframes glow-pulse {
-        0%, 100% { text-shadow: 0 0 10px rgba(255, 126, 0, 0.5); }
-        50% { text-shadow: 0 0 30px rgba(255, 126, 0, 1), 0 0 40px rgba(255, 126, 0, 0.6); }
-      }
-    </style>
-  </head>
-  <body class="bg-[#050505] text-gray-200 font-mono min-h-screen">
-    <div id="root"></div>
+    ];
 
-    <script type="text/babel" data-type="module">
-      import React, { useState, useEffect, useRef } from 'react';
-      import { createRoot } from 'react-dom/client';
-      import { Terminal, Settings, ExternalLink, Gamepad2, Github, Send, MessageSquare } from 'lucide-react';
+    const ORIGINAL_DIVERGENCE = "1.048596";
+    const LAB_BACKGROUND = "https://scienceadventure.wiki.gg/images/Future_Gadget_Lab_-_Day.png";
+    const MICROWAVE_IMG = "https://static.wikia.nocookie.net/steins-gate/images/0/09/PhoneWave_%28VN%29.png";
 
-      const USER_INFO = {
-        nickname: "BfG_Animeshnik",
-        tagline: "Безумный Ученый / Mad Scientist",
-        description: "Исследователь временных линий. Любитель аниме, игр и кодинга. Добро пожаловать в Лабораторию Гаджетов Будущего.",
-        divergenceNumber: "1.048596",
-        avatarUrl: "https://static.wikia.nocookie.net/steins-gate/images/2/26/Rintaro_Okabe_Portrait.png"
-      };
+    const SOCIAL_LINKS = [
+      { id: 'steam',   title: 'Steam Profile', url: 'https://steamcommunity.com/id/bfg_anime', icon: Gamepad2 },
+      { id: 'telegram',title: 'Telegram',      url: 'https://t.me/bfg_animeshnik',            icon: Send     },
+      { id: 'discord', title: 'Discord',       url: 'https://discord.gg/nv5pNRVRWM',                                    icon: MessageSquare },
+      { id: 'github',  title: 'GitHub',        url: 'https://github.com/BfGanimeshnik',     icon: Github   }
+    ];
 
-      const SOCIAL_LINKS = [
-        { id: 'steam', title: 'Steam Profile', url: 'https://steamcommunity.com/id/bfg_anime', icon: Gamepad2 },
-        { id: 'telegram', title: 'Telegram', url: 'https://t.me/bfg_animeshnik', icon: Send },
-        { id: 'discord', title: 'Discord', url: 'https://discord.gg/nv5pNRVRWM', icon: MessageSquare },
-        { id: 'github', title: 'GitHub', url: 'https://github.com/BfGanimeshnik', icon: Github }
-      ];
+    // ──────────────────────────────────────────────
+    // КОМПОНЕНТЫ (Particles, Scanlines, GearsBackground, DivergenceMeter)
+    // ──────────────────────────────────────────────
 
-      // Частицы
-      const Particles = () => {
-        const canvasRef = useRef(null);
-        useEffect(() => {
-          const canvas = canvasRef.current;
-          if (!canvas) return;
-          const ctx = canvas.getContext('2d');
-          canvas.width = window.innerWidth;
-          canvas.height = window.innerHeight;
+    const Particles = () => {
+      const canvasRef = useRef(null);
+      useEffect(() => {
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-          const particles = [];
-          const count = 100;
+        const particles = [];
+        const count = 100;
 
-          class Particle {
-            constructor() { this.reset(); }
-            reset() {
-              this.x = Math.random() * canvas.width;
-              this.y = Math.random() * canvas.height;
-              this.size = Math.random() * 3 + 1;
-              this.speedX = Math.random() * 1 - 0.5;
-              this.speedY = Math.random() * 1 - 0.5;
+        class Particle {
+          constructor() { this.reset(); }
+          reset() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 3 + 1;
+            this.speedX = Math.random() * 1 - 0.5;
+            this.speedY = Math.random() * 1 - 0.5;
+            this.opacity = 1;
+          }
+          update() {
+            this.x += this.speedX;
+            this.y += this.speedY;
+            this.opacity -= 0.005;
+            if (this.opacity <= 0 || this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+              this.reset();
               this.opacity = 1;
             }
-            update() {
-              this.x += this.speedX;
-              this.y += this.speedY;
-              this.opacity -= 0.005;
-              if (this.opacity <= 0 || this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
-                this.reset();
-                this.opacity = 1;
-              }
-            }
-            draw() {
-              ctx.globalAlpha = this.opacity;
-              ctx.fillStyle = '#ff7e00';
-              ctx.shadowBlur = 20;
-              ctx.shadowColor = '#ff7e00';
-              ctx.beginPath();
-              ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-              ctx.fill();
-            }
           }
+          draw() {
+            ctx.globalAlpha = this.opacity;
+            ctx.fillStyle = '#ff7e00';
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = '#ff7e00';
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
 
-          for (let i = 0; i < count; i++) particles.push(new Particle());
+        for (let i = 0; i < count; i++) particles.push(new Particle());
 
-          const animate = () => {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-            requestAnimationFrame(animate);
-          };
-          animate();
+        const animate = () => {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          particles.forEach(p => { p.update(); p.draw(); });
+          requestAnimationFrame(animate);
+        };
+        animate();
 
-          const handleResize = () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-          };
-          window.addEventListener('resize', handleResize);
-          return () => window.removeEventListener('resize', handleResize);
-        }, []);
+        const handleResize = () => {
+          canvas.width = window.innerWidth;
+          canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+      }, []);
 
-        return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-1 opacity-70" />;
+      return <canvas ref={canvasRef} className="fixed inset-0 pointer-events-none z-1 opacity-70" />;
+    };
+
+    const Scanlines = () => (
+      <div className="fixed inset-0 z-50 pointer-events-none select-none overflow-hidden">
+        <div className="absolute inset-0 opacity-15"
+          style={{
+            background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px, rgba(0,0,0,0) 4px), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.02), rgba(0,0,255,0.03))',
+            backgroundSize: '100% 4px, 100% 100%',
+            animation: 'scan 40s linear infinite'
+          }}
+        />
+      </div>
+    );
+
+    const GearsBackground = () => (
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-20 -left-20 text-gray-800/30 animate-spin-slow"><Settings size={300} strokeWidth={1} /></div>
+        <div className="absolute top-1/2 -left-10 text-gray-800/20 animate-spin-slow-reverse"><Settings size={200} strokeWidth={1.5} /></div>
+        <div className="absolute -bottom-32 -right-32 text-gray-800/30 animate-spin-slow"><Settings size={400} strokeWidth={0.5} /></div>
+        <div className="absolute top-10 right-10 text-gray-800/20 animate-spin-slow-reverse"><Settings size={120} strokeWidth={2} /></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"></div>
+      </div>
+    );
+
+    const DivergenceMeter = ({ target, isGlitching }) => {
+      const [displayNumber, setDisplayNumber] = useState("0.000000");
+
+      const startGlitch = () => {
+        let count = 0;
+        const interval = setInterval(() => {
+          setDisplayNumber((Math.random() * 2).toFixed(6));
+          count++;
+          if (count > 30) {
+            clearInterval(interval);
+            setDisplayNumber(target);
+          }
+        }, 70);
       };
 
-      // Scanlines
-      const Scanlines = () => (
-        <div className="fixed inset-0 z-50 pointer-events-none select-none overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_50%,rgba(0,0,0,0.6)_100%)]" />
-          <div 
-            className="absolute inset-0 opacity-15"
-            style={{
-              background: 'repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px, rgba(0,0,0,0) 4px), linear-gradient(90deg, rgba(255,0,0,0.03), rgba(0,255,0,0.02), rgba(0,0,255,0.03))',
-              backgroundSize: '100% 4px, 100% 100%',
-              animation: 'scan 40s linear infinite'
-            }}
-          />
-        </div>
-      );
+      useEffect(() => {
+        if (isGlitching) startGlitch();
+        else if (displayNumber !== target) setDisplayNumber(target);
+      }, [isGlitching, target]);
 
-      // Шестерёнки
-      const GearsBackground = () => (
-        <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -left-20 text-gray-800/30 animate-spin-slow"><Settings size={300} strokeWidth={1} /></div>
-          <div className="absolute top-1/2 -left-10 text-gray-800/20 animate-spin-slow-reverse"><Settings size={200} strokeWidth={1.5} /></div>
-          <div className="absolute -bottom-32 -right-32 text-gray-800/30 animate-spin-slow"><Settings size={400} strokeWidth={0.5} /></div>
-          <div className="absolute top-10 right-10 text-gray-800/20 animate-spin-slow-reverse"><Settings size={120} strokeWidth={2} /></div>
-          <div className="absolute inset-0 bg-[radial-gradient(circle,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[length:40px_40px]"></div>
-        </div>
-      );
+      useEffect(() => { startGlitch(); }, []);
 
-      // Divergence Meter с бесконечным глитч-циклом
-      const DivergenceMeter = () => {
-        const [displayNumber, setDisplayNumber] = useState("0.000000");
-        const [isGlitching, setIsGlitching] = useState(true);
-        const targetNumber = USER_INFO.divergenceNumber;
-
-        const startGlitch = () => {
-          setIsGlitching(true);
-          let count = 0;
-          const interval = setInterval(() => {
-            setDisplayNumber((Math.random() * 2).toFixed(6));
-            count++;
-            if (count > 25) { // ~2 секунды хаоса
-              clearInterval(interval);
-              setDisplayNumber(targetNumber);
-              setIsGlitching(false);
-              setTimeout(startGlitch, 5000); // 5 секунд стабильности, потом снова
-            }
-          }, 80);
-        };
-
-        useEffect(() => {
-          startGlitch(); // Запуск при загрузке
-        }, []);
-
-        return (
-          <div className="flex flex-col items-center justify-center my-12 select-none">
-            <div className="text-sg-orange text-xs tracking-[0.5em] mb-2 uppercase opacity-70 animate-glow-pulse" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
-              Divergence Meter
+      return (
+        <div className="flex flex-col items-center justify-center my-12 select-none">
+          <div className="text-sg-orange text-xs tracking-[0.5em] mb-2 uppercase opacity-70" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
+            Divergence Meter
+          </div>
+          <div className={`relative bg-black/60 border border-gray-800 px-8 py-5 rounded-xl shadow-[0_0_30px_rgba(255,126,0,0.3)] backdrop-blur-sm ${isGlitching ? 'glitching' : ''}`}>
+            <div className="flex items-baseline space-x-1 sm:space-x-2">
+              {displayNumber.split('').map((char, i) => (
+                <span key={i} style={{ '--i': i }} className={`font-mono text-4xl sm:text-6xl font-bold ${char === '.' ? 'text-gray-500' : 'text-sg-orange'} drop-shadow-[0_0_12px_rgba(255,126,0,1)]`}>
+                  {char}
+                </span>
+              ))}
             </div>
-            <div className={`relative bg-black/60 border border-gray-800 px-8 py-5 rounded-xl shadow-[0_0_30px_rgba(255,126,0,0.3)] backdrop-blur-sm ${isGlitching ? 'glitching' : ''}`}>
-              <div className="flex items-baseline space-x-1 sm:space-x-2">
-                {displayNumber.split('').map((char, i) => (
-                  <span 
-                    key={i} 
-                    style={{ '--i': i } }
-                    className={`font-mono text-4xl sm:text-6xl font-bold ${char === '.' ? 'text-gray-500' : 'text-sg-orange'} drop-shadow-[0_0_12px_rgba(255,126,0,1)]`}
-                  >
-                    {char}
-                  </span>
+            <div className="absolute inset-0 border border-sg-orange/30 rounded-xl animate-pulse opacity-30"></div>
+            <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-sg-orange opacity-60"></div>
+            <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-sg-orange opacity-60"></div>
+            <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-sg-orange opacity-60"></div>
+            <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-sg-orange opacity-60"></div>
+          </div>
+        </div>
+      );
+    };
+
+    // ──────────────────────────────────────────────
+    // ПАСХАЛКА — любой член лаборатории
+    // ──────────────────────────────────────────────
+    const LabMemberEasterEgg = () => {
+      const [visible, setVisible] = useState(false);
+      const [member, setMember] = useState(null);
+
+      useEffect(() => {
+        if (Math.random() < 0.38) { // ~38% шанс
+          const randomMember = LAB_MEMBERS[Math.floor(Math.random() * LAB_MEMBERS.length)];
+          setMember(randomMember);
+          setVisible(true);
+
+          const duration = 8000 + Math.random() * 4000; // 8–12 сек
+          const timer = setTimeout(() => setVisible(false), duration);
+          return () => clearTimeout(timer);
+        }
+      }, []);
+
+      if (!visible || !member) return null;
+
+      return (
+        <div className="fixed bottom-8 left-8 z-40 animate-fadeInOut pointer-events-none flex flex-col items-center">
+          <div className="relative w-48 h-48">
+            <img 
+              src={member.img} 
+              alt={member.name} 
+              className="w-full h-full object-cover rounded-full shadow-[0_0_30px_rgba(255,126,0,0.6)] border-4 border-dashed border-gray-500"
+            />
+          </div>
+          <p 
+            className="text-center text-3xl font-bold mt-4 tracking-wider drop-shadow-lg"
+            style={{ color: member.easterEgg.color, animation: 'glow-pulse 2s ease-in-out infinite' }}
+          >
+            {member.easterEgg.phrase}
+          </p>
+        </div>
+      );
+    };
+
+    // ──────────────────────────────────────────────
+    // ГЛАВНЫЙ КОМПОНЕНТ
+    // ──────────────────────────────────────────────
+    const App = () => {
+      const [showContent, setShowContent] = useState(false);
+      const [currentDivergence, setCurrentDivergence] = useState(ORIGINAL_DIVERGENCE);
+      const [isGlitching, setIsGlitching] = useState(false);
+      const [isWorldGlitching, setIsWorldGlitching] = useState(false);
+      const [selectedMember, setSelectedMember] = useState(() => {
+        const saved = localStorage.getItem('labMember');
+        return saved ? JSON.parse(saved) : LAB_MEMBERS[0];
+      });
+      const [dmailText, setDmailText] = useState("");
+
+      useEffect(() => {
+        localStorage.setItem('labMember', JSON.stringify(selectedMember));
+      }, [selectedMember]);
+
+      useEffect(() => {
+        const timer = setTimeout(() => setShowContent(true), 600);
+        return () => clearTimeout(timer);
+      }, []);
+
+      const timeLeap = () => {
+        setIsWorldGlitching(true);
+        setIsGlitching(true);
+        const newDiv = (Math.random() * 2).toFixed(6);
+        setCurrentDivergence(newDiv);
+        setTimeout(() => {
+          setCurrentDivergence(ORIGINAL_DIVERGENCE);
+          setIsGlitching(false);
+          setIsWorldGlitching(false);
+        }, 4000);
+      };
+
+      const nextMember = () => {
+        const currentIndex = LAB_MEMBERS.findIndex(m => m.id === selectedMember.id);
+        const nextIndex = (currentIndex + 1) % LAB_MEMBERS.length;
+        setSelectedMember(LAB_MEMBERS[nextIndex]);
+      };
+
+      return (
+        <div className={`relative min-h-screen w-full bg-[#050505] text-gray-200 font-mono flex flex-col ${isWorldGlitching ? 'animate-world-glitch' : ''}`}>
+          {/* Фон */}
+          <div className="fixed inset-0 opacity-30 pointer-events-none bg-cover bg-center" style={{ backgroundImage: `url("${LAB_BACKGROUND}")` }} />
+
+          {/* CRT */}
+          <div className="fixed inset-0 z-50 pointer-events-none crt-overlay" />
+
+          {isWorldGlitching && <div className="fixed inset-0 bg-sg-orange z-60 animate-screen-flash pointer-events-none" />}
+
+          <Particles />
+          <Scanlines />
+          <GearsBackground />
+
+          {/* Пасхалка от любого члена */}
+          <LabMemberEasterEgg />
+
+          <main className={`relative z-10 flex-grow flex flex-col items-center justify-start pt-12 pb-32 transition-opacity duration-1500 ease-in-out ${showContent ? 'opacity-100' : 'opacity-0'}`}>
+            <header className="w-full max-w-4xl px-6 flex justify-between items-center mb-6 opacity-70">
+              <div className="flex items-center space-x-3 text-sm text-sg-orange border border-sg-orange/40 px-4 py-2 rounded bg-black/50">
+                <Terminal size={16} />
+                <span>LAB_MEM_001_SYSTEM</span>
+              </div>
+              <div className="text-sm text-gray-500">{new Date().toISOString().split('T')[0]}</div>
+            </header>
+
+            <DivergenceMeter target={currentDivergence} isGlitching={isGlitching} />
+
+            <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-8">
+              <div className="relative w-48 h-48 mx-auto mb-6 group">
+                <div className="absolute inset-0 rounded-full border-4 border-dashed border-sg-orange/40 animate-spin-slow"></div>
+                <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-sg-orange/60 shadow-[0_0_30px_rgba(255,126,0,0.5)] bg-black avatar-clip">
+                  <img 
+                    src={selectedMember.img} 
+                    alt={selectedMember.name} 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <button
+                  onClick={nextMember}
+                  className="absolute -bottom-2 -right-2 bg-black border-2 border-sg-orange rounded-full p-2 hover:bg-sg-orange/20 transition z-20 shadow-lg"
+                  title="Сменить члена лаборатории"
+                >
+                  <RefreshCw size={20} className="text-sg-orange" />
+                </button>
+              </div>
+
+              <div className="text-center space-y-4 mb-10">
+                <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]">
+                  {selectedMember.name}
+                </h1>
+                <p className="text-sg-orange text-xl md:text-2xl tracking-widest uppercase font-bold" style={{ color: selectedMember.color, animation: 'glow-pulse 3s ease-in-out infinite' }}>
+                  {selectedMember.title}
+                </p>
+                <div className="h-px w-32 bg-gradient-to-r from-transparent via-sg-orange to-transparent mx-auto opacity-60"></div>
+                <p className="text-gray-300 text-lg leading-relaxed max-w-lg mx-auto px-4">
+                  Член Future Gadget Laboratory. World Line {currentDivergence}.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mt-16">
+                {SOCIAL_LINKS.map(link => (
+                  <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
+                    className="group relative block p-6 border-2 border-gray-700 hover:border-sg-orange transition-all duration-300 rounded-xl bg-black/50 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(255,126,0,0.4)]">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-5">
+                        <div className="p-3 rounded-xl bg-black/60 border border-gray-700 group-hover:border-sg-orange group-hover:bg-sg-orange/10 text-gray-300 group-hover:text-sg-orange transition-all duration-300">
+                          <link.icon size={28} />
+                        </div>
+                        <span className="text-2xl font-bold text-gray-200 group-hover:text-white tracking-wide">{link.title}</span>
+                      </div>
+                      <ExternalLink size={20} className="text-gray-600 group-hover:text-sg-orange transition-colors" />
+                    </div>
+                  </a>
                 ))}
               </div>
-              <div className="absolute inset-0 border border-sg-orange/30 rounded-xl animate-pulse opacity-30"></div>
-              <div className="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-sg-orange opacity-60"></div>
-              <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-sg-orange opacity-60"></div>
-              <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-sg-orange opacity-60"></div>
-              <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-sg-orange opacity-60"></div>
-            </div>
-          </div>
-        );
-      };
 
-      // Профиль и остальное без изменений (чтобы не удлинять код, но они те же, что в предыдущей версии)
-      const ProfileSection = () => (
-        <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-8">
-          <div className="relative w-48 h-48 mx-auto mb-8 group cursor-pointer">
-            <div className="absolute inset-0 rounded-full border-4 border-dashed border-sg-orange/40 animate-spin-slow"></div>
-            <div className="absolute inset-2 rounded-full border-2 border-sg-orange/60 shadow-[0_0_30px_rgba(255,126,0,0.5)] bg-black overflow-hidden">
-              <img src={USER_INFO.avatarUrl} alt="Avatar" className="w-full h-full object-cover opacity-85 group-hover:opacity-100 transition-all duration-500 grayscale group-hover:grayscale-0" />
-            </div>
-          </div>
-
-          <div className="text-center space-y-6 mb-12">
-            <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]">
-              {USER_INFO.nickname}
-            </h1>
-            <p className="text-sg-orange text-xl md:text-2xl tracking-widest uppercase animate-glow-pulse" style={{animation: 'glow-pulse 3s ease-in-out infinite'}}>
-              {USER_INFO.tagline}
-            </p>
-            <div className="h-px w-32 bg-gradient-to-r from-transparent via-sg-orange to-transparent mx-auto opacity-60"></div>
-            <p className="text-gray-300 text-base md:text-lg leading-relaxed max-w-lg mx-auto px-4">
-              {USER_INFO.description}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mt-16">
-            {SOCIAL_LINKS.map(link => (
-              <a key={link.id} href={link.url} target={link.url !== '#' ? "_blank" : undefined} rel={link.url !== '#' ? "noopener noreferrer" : undefined}
-                className="group relative block p-6 border-2 border-gray-700 hover:border-sg-orange transition-all duration-300 rounded-xl bg-black/50 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(255,126,0,0.4)]">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-5">
-                    <div className="p-3 rounded-xl bg-black/60 border border-gray-700 group-hover:border-sg-orange group-hover:bg-sg-orange/10 text-gray-300 group-hover:text-sg-orange transition-all duration-300">
-                      <link.icon size={28} />
-                    </div>
-                    <span className="text-2xl font-bold text-gray-200 group-hover:text-white tracking-wide">{link.title}</span>
-                  </div>
-                  {link.url !== '#' && <ExternalLink size={20} className="text-gray-600 group-hover:text-sg-orange transition-colors" />}
+              <div className="mt-20 w-full max-w-md mx-auto border-4 border-gray-800 rounded-xl bg-black/80 p-6 backdrop-blur-md shadow-[0_0_30px_rgba(255,126,0,0.3)]">
+                <div className="flex items-center gap-3 mb-4 text-sg-orange">
+                  <Phone size={28} />
+                  <h3 className="text-xl font-bold">Send D-Mail</h3>
                 </div>
-                <div className="absolute inset-0 border-2 border-sg-orange/0 group-hover:border-sg-orange/50 rounded-xl transition-all duration-500 pointer-events-none"></div>
-              </a>
-            ))}
-          </div>
+                <input 
+                  type="text" 
+                  value={dmailText}
+                  onChange={e => setDmailText(e.target.value)}
+                  placeholder="Message to the past..."
+                  className="w-full bg-black/60 border border-gray-700 rounded px-4 py-3 text-gray-300 focus:border-sg-orange outline-none transition mb-4"
+                />
+                <button 
+                  onClick={() => { if (dmailText.trim()) { timeLeap(); setDmailText(""); } }}
+                  className="w-full bg-sg-orange/20 border-2 border-sg-orange text-sg-orange py-3 rounded hover:bg-sg-orange/40 transition font-bold tracking-wider"
+                >
+                  SEND TO PAST
+                </button>
+              </div>
 
-          <div className="mt-20 text-center">
-            <p className="text-sm text-gray-500 mb-3">Operation Skuld Status: <span className="text-sg-orange">Active</span></p>
-            <p className="text-3xl md:text-4xl font-bold text-sg-orange tracking-widest animate-glow-pulse" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
-              EL PSY KONGROO
-            </p>
+              <div className="mt-20 text-center">
+                <p className="text-sm text-gray-500 mb-3">Operation Skuld Status: <span className="text-sg-orange">Active</span></p>
+                <p className="text-3xl md:text-4xl font-bold text-sg-orange tracking-widest" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
+                  EL PSY KONGROO
+                </p>
+              </div>
+            </div>
+          </main>
+
+          <div className="fixed bottom-8 right-8 z-40 cursor-pointer group" onClick={timeLeap}>
+            <img src={MICROWAVE_IMG} alt="Phone Microwave" className="w-40 h-40 object-contain drop-shadow-2xl group-hover:animate-pulse group-hover:shadow-[0_0_50px_rgba(255,126,0,0.9)] transition-all duration-500" />
+            <p className="text-center text-sg-orange text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Activate Time Leap</p>
           </div>
         </div>
       );
+    };
 
-      const App = () => {
-        const [showContent, setShowContent] = useState(false);
-
-        useEffect(() => {
-          const timer = setTimeout(() => setShowContent(true), 600);
-          return () => clearTimeout(timer);
-        }, []);
-
-        return (
-          <div className="relative min-h-screen w-full bg-[#050505] text-gray-200 font-mono flex flex-col">
-            <Particles />
-            <Scanlines />
-            <GearsBackground />
-
-            <main className={`relative z-10 flex-grow flex flex-col items-center justify-start pt-12 pb-24 transition-opacity duration-1500 ease-in-out ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-              <header className="w-full max-w-4xl px-6 flex justify-between items-center mb-6 opacity-70">
-                <div className="flex items-center space-x-3 text-sm text-sg-orange border border-sg-orange/40 px-4 py-2 rounded bg-black/50">
-                  <Terminal size={16} />
-                  <span>LAB_MEM_001_SYSTEM</span>
-                </div>
-                <div className="text-sm text-gray-500">{new Date().toISOString().split('T')[0]}</div>
-              </header>
-
-              <DivergenceMeter />
-              <ProfileSection />
-            </main>
-          </div>
-        );
-      };
-
-      const root = createRoot(document.getElementById('root'));
-      root.render(<App />);
-    </script>
-  </body>
+    const root = createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
 </html>
