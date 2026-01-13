@@ -60,23 +60,153 @@
         background: #ff7e00;
       }
     </style>
-  <script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@^19.2.3",
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0",
-    "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
-  }
-}
-</script>
-<link rel="stylesheet" href="/index.css">
-</head>
+    <script type="importmap">
+      {
+        "imports": {
+          "react": "https://esm.sh/react@18.2.0",
+          "react-dom": "https://esm.sh/react-dom@18.2.0",
+          "lucide-react": "https://esm.sh/lucide-react@0.344.0"
+        }
+      }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
-  <script type="module" src="/index.tsx"></script>
-</body>
+    <script type="module">
+      import React from 'react';
+      import ReactDOM from 'react-dom';
+      import { Terminal, Gamepad2, Github, Send, MessageSquare } from 'lucide-react';
+
+      // Placeholder components (implement as needed; these are simplified for optimization)
+      const Scanlines = () => (
+        <div 
+          className="fixed inset-0 pointer-events-none opacity-20 z-0"
+          style={{
+            background: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.5) 1px, rgba(0,0,0,0.5) 2px)'
+          }}
+        />
+      );
+
+      const GearsBackground = () => (
+        <div 
+          className="absolute inset-0 opacity-10 z-0 animate-spin-slow"
+          style={{
+            background: 'radial-gradient(circle, #ff7e00 0%, transparent 70%)' // Simple placeholder; replace with SVG gears if needed
+          }}
+        />
+      );
+
+      const DivergenceMeter = () => (
+        <div className="text-sg-orange text-6xl font-bold mb-8 animate-flicker">
+          1.048596
+        </div>
+      );
+
+      const ProfileSection = () => {
+        const USER_INFO = {
+          nickname: "BfG_Animeshnik",
+          tagline: "Безумный Ученый / Mad Scientist",
+          description: "Исследователь временных линий. Любитель аниме, игр и кодинга. Добро пожаловать в Лабораторию Гаджетов Будущего.",
+          divergenceNumber: "1.048596",
+          avatarUrl: "https://picsum.photos/seed/bfg/400/400"
+        };
+
+        const SOCIAL_LINKS = [
+          {
+            id: 'steam',
+            title: 'Steam Profile',
+            url: 'https://steamcommunity.com/id/bfg_anime',
+            icon: Gamepad2,
+            color: 'hover:text-[#1b2838] hover:bg-[#66c0f4]'
+          },
+          {
+            id: 'telegram',
+            title: 'Telegram',
+            url: '#',
+            icon: Send,
+            color: 'hover:text-white hover:bg-[#229ED9]'
+          },
+          {
+            id: 'discord',
+            title: 'Discord',
+            url: '#',
+            icon: MessageSquare,
+            color: 'hover:text-white hover:bg-[#5865F2]'
+          },
+          {
+            id: 'github',
+            title: 'GitHub',
+            url: '#',
+            icon: Github,
+            color: 'hover:text-black hover:bg-white'
+          }
+        ];
+
+        return (
+          <section className="max-w-2xl mx-auto text-center px-6">
+            <img 
+              src={USER_INFO.avatarUrl} 
+              alt="Avatar" 
+              className="rounded-full w-32 h-32 mx-auto mb-4 border-2 border-sg-orange"
+            />
+            <h1 className="text-3xl mb-2">{USER_INFO.nickname}</h1>
+            <p className="text-xl mb-4 text-gray-400">{USER_INFO.tagline}</p>
+            <p className="mb-6">{USER_INFO.description}</p>
+            <div className="flex justify-center space-x-4">
+              {SOCIAL_LINKS.map((link) => (
+                <a
+                  key={link.id}
+                  href={link.url}
+                  title={link.title}
+                  className={`p-2 rounded transition-colors ${link.color}`}
+                >
+                  <link.icon size={24} />
+                </a>
+              ))}
+            </div>
+          </section>
+        );
+      };
+
+      const App = () => {
+        const [showContent, setShowContent] = React.useState(false);
+
+        React.useEffect(() => {
+          const timer = setTimeout(() => setShowContent(true), 500);
+          return () => clearTimeout(timer);
+        }, []);
+
+        return (
+          <div className="relative min-h-screen w-full bg-[#050505] text-gray-200 font-mono overflow-hidden flex flex-col">
+            <Scanlines />
+            <GearsBackground />
+            <main
+              className={`
+                relative z-10 flex-grow flex flex-col items-center justify-start pt-10 pb-20
+                transition-opacity duration-1000 ease-in-out
+                ${showContent ? 'opacity-100' : 'opacity-0'}
+              `}
+            >
+              <header className="w-full max-w-4xl px-6 flex justify-between items-center mb-4 opacity-60">
+                <div className="flex items-center space-x-2 text-xs text-sg-orange border border-sg-orange/30 px-3 py-1 rounded bg-black/40">
+                  <Terminal size={14} />
+                  <span>LAB_MEM_001_SYSTEM</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {new Date().toISOString().split('T')[0]}
+                </div>
+              </header>
+              <DivergenceMeter />
+              <ProfileSection />
+            </main>
+          </div>
+        );
+      };
+
+      const rootElement = document.getElementById('root');
+      if (rootElement) {
+        ReactDOM.render(<App />, rootElement);
+      }
+    </script>
+  </body>
 </html>
