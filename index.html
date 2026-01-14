@@ -169,10 +169,10 @@
     // ──────────────────────────────────────────────
   
     const MUSIC_TRACKS = [
-      { id: 'hacking', title: 'Hacking to the Gate', artist: 'Kanako Itō', audio: 'music/hacking-to-the-gate.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/2/23/Steins%3Bgate_header.jpg' },
-      { id: 'sky', title: 'Sky of Beginning', artist: 'Kanako Itō', audio: 'music/sky-of-beginning.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/4/41/0_header.jpg' },
-      { id: 'another', title: 'Another Heaven', artist: 'Kanako Itō', audio: 'music/another-heaven.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/f/fc/Mde_header.jpg' },
-      { id: 'gate', title: 'Gate of Steiner', artist: 'Kanako Itō', audio: 'music/gate-of-steiner.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/8/8a/Alpha_World_Line.png' }
+      { id: 'hacking', title: 'Hacking to the Gate', artist: 'Kanako Itō', audio: 'music/hacking.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/2/23/Steins%3Bgate_header.jpg' },
+      { id: 'sky', title: 'Fatima', artist: 'Kanako Itō', audio: 'music/fatima.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/4/41/0_header.jpg' },
+      { id: 'darlings', title: 'My Darlings Embrace', artist: 'Junjou no Afilia', audio: 'music/darling.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/f/fc/Mde_header.jpg' },
+      { id: 'gate', title: 'Gate of Steiner', artist: 'Takeshi Abo', audio: 'music/steiner.mp3', cover: 'https://images.genius.com/4ca343c719b10f19dad5806999aad983.500x500x1.jpg' }
     ];
   
     const CHARACTER_QUOTES = [
@@ -1659,7 +1659,6 @@
                       <h2 className="text-2xl font-bold text-sg-orange">Alpha World Line (1.048596)</h2>
                       <span className="bg-sg-orange/20 text-sg-orange px-3 py-1 rounded-full text-sm">Divergence: 1.048596</span>
                     </div>
-                    <img src="https://static.wikia.nocookie.net/steins-gate/images/8/8a/Alpha_World_Line.png" alt="Alpha World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
                     <p className="text-gray-300 mb-4">The Alpha Attractor Field is a world line where SERN's dystopian rule is established in 2036. This timeline is characterized by advanced technology and a world where time travel is controlled by SERN.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
@@ -1691,7 +1690,6 @@
                       <h2 className="text-2xl font-bold text-blue-400">Beta World Line (1.129848)</h2>
                       <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-sm">Divergence: 1.129848</span>
                     </div>
-                    <img src="https://static.wikia.nocookie.net/steins-gate/images/5/5a/Beta_World_Line.png" alt="Beta World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
                     <p className="text-gray-300 mb-4">The Beta Attractor Field is a world line where World War III occurs in 2033. This timeline is marked by global conflict and destruction, with Russia launching a nuclear strike.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
@@ -1723,7 +1721,6 @@
                       <h2 className="text-2xl font-bold text-green-400">Gamma World Line (2.615074)</h2>
                       <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">Divergence: 2.615074</span>
                     </div>
-                    <img src="https://static.wikia.nocookie.net/steins-gate/images/3/3a/Gamma_World_Line.png" alt="Gamma World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
                     <p className="text-gray-300 mb-4">The Gamma Attractor Field is a world line where the Committee of 300 rules the world. This timeline is characterized by a secret organization controlling global events.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
@@ -1755,7 +1752,6 @@
                       <h2 className="text-2xl font-bold text-purple-400">Delta World Line (3.019430)</h2>
                       <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-sm">Divergence: 3.019430</span>
                     </div>
-                    <img src="https://static.wikia.nocookie.net/steins-gate/images/6/6a/Delta_World_Line.png" alt="Delta World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
                     <p className="text-gray-300 mb-4">The Delta Attractor Field is a world line where the future gadget lab members live peaceful lives. This timeline is marked by stability and the absence of major conflicts.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
@@ -1787,7 +1783,6 @@
                       <h2 className="text-2xl font-bold text-red-400">Omega World Line (-0.275349)</h2>
                       <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm">Divergence: -0.275349</span>
                     </div>
-                    <img src="https://static.wikia.nocookie.net/steins-gate/images/7/7a/Omega_World_Line.png" alt="Omega World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
                     <p className="text-gray-300 mb-4">The Omega Attractor Field is a world line where the future gadget lab members face tragic endings. This timeline is marked by loss and despair.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
@@ -1819,7 +1814,6 @@
                       <h2 className="text-2xl font-bold text-yellow-400">Steins Gate World Line (1.048596)</h2>
                       <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm">Divergence: 1.048596</span>
                     </div>
-                    <img src="https://static.wikia.nocookie.net/steins-gate/images/4/4a/Steins_Gate_World_Line.png" alt="Steins Gate World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
                     <p className="text-gray-300 mb-4">The Steins Gate is the ideal world line where all conflicts are resolved, and everyone lives happily. This timeline is the ultimate goal of Okabe's journey.</p>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
