@@ -46,10 +46,33 @@
     @keyframes world-glitch { 0%, 100% { transform: translate(0); filter: brightness(1); } 10%,30%,50%,70%,90% { transform: translate(-10px,-10px); filter: brightness(1.5); } 20%,40%,60%,80% { transform: translate(10px,10px); filter: brightness(0.8); } }
     @keyframes screen-flash { 0%, 100% { opacity: 0; } 50% { opacity: 0.4; } }
     @keyframes fadeInOut { 0% { opacity: 0; transform: translateY(20px); } 15% { opacity: 1; transform: translateY(0); } 85% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-20px); } }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes slideIn { from { opacity: 0; transform: translateX(-20px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.8; } }
     .glitching span { animation: glitch 0.15s infinite; animation-delay: calc(var(--i) * 50ms); }
     .crt-overlay::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.8) 100%); pointer-events: none; z-index: 50; }
     .crt-overlay::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.05) 2px, rgba(0,0,0,0.05) 4px); pointer-events: none; z-index: 50; }
     .avatar-clip { clip-path: circle(50% at 50% 50%); }
+    .static-noise {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+      background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23000" opacity="0.05"/><rect x="10" y="10" width="1" height="1" fill="%23fff"/><rect x="20" y="30" width="1" height="1" fill="%23fff"/><rect x="40" y="50" width="1" height="1" fill="%23fff"/><rect x="60" y="70" width="1" height="1" fill="%23fff"/><rect x="80" y="90" width="1" height="1" fill="%23fff"/></svg>');
+      animation: noise 0.5s steps(2) infinite;
+    }
+    @keyframes noise { 0% { transform: translate(0); } 100% { transform: translate(-5px, -5px); } }
+    .flicker-text { animation: flicker 1.5s infinite alternate; }
+    @keyframes flicker { 0% { opacity: 0.8; text-shadow: 0 0 5px rgba(255,126,0,0.5); } 100% { opacity: 1; text-shadow: 0 0 20px rgba(255,126,0,1); } }
+    .screen-flicker { animation: screen-flicker 3s infinite; }
+    @keyframes screen-flicker { 0% { opacity: 1; } 50% { opacity: 0.9; } 100% { opacity: 1; } }
+    .scan-effect { animation: scan-effect 4s linear infinite; }
+    @keyframes scan-effect { 0% { background-position: 0 0; } 100% { background-position: 0 100%; } }
+    .section-transition { animation: fadeIn 0.8s ease-out; }
+    .nav-item { transition: all 0.3s ease; }
+    .nav-item:hover { transform: translateY(-2px); }
+    .card-hover { transition: all 0.3s ease; }
+    .card-hover:hover { transform: translateY(-5px); }
   </style>
 </head>
 <body class="bg-[#050505] text-gray-200 font-mono min-h-screen relative">
@@ -58,7 +81,7 @@
   <script type="text/babel" data-type="module">
     import React, { useState, useEffect, useRef } from 'react';
     import { createRoot } from 'react-dom/client';
-    import { Terminal, Settings, ExternalLink, Gamepad2, Github, Send, MessageSquare, Phone, RefreshCw } from 'lucide-react';
+    import { Terminal, Settings, ExternalLink, Gamepad2, Github, Send, MessageSquare, Phone, RefreshCw, Home, Info, Image, Clock, Menu, X, Music, Map, Users, Tv, Book } from 'lucide-react';
 
     // ──────────────────────────────────────────────
     // ЧЛЕНЫ ЛАБОРАТОРИИ + ПАСХАЛКИ
@@ -139,6 +162,242 @@
       { id: 'telegram',title: 'Telegram',      url: 'https://t.me/bfg_animeshnik',            icon: Send     },
       { id: 'discord', title: 'Discord',       url: 'https://discord.gg/nv5pNRVRWM',                                    icon: MessageSquare },
       { id: 'github',  title: 'GitHub',        url: 'https://github.com/BfGanimeshnik',     icon: Github   }
+    ];
+  
+    // ──────────────────────────────────────────────
+    // ДАННЫЕ ДЛЯ НОВЫХ СЕКЦИЙ
+    // ──────────────────────────────────────────────
+  
+    const MUSIC_TRACKS = [
+      { id: 'hacking', title: 'Hacking to the Gate', artist: 'Kanako Itō', audio: 'music/hacking-to-the-gate.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/2/23/Steins%3Bgate_header.jpg' },
+      { id: 'sky', title: 'Sky of Beginning', artist: 'Kanako Itō', audio: 'music/sky-of-beginning.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/4/41/0_header.jpg' },
+      { id: 'another', title: 'Another Heaven', artist: 'Kanako Itō', audio: 'music/another-heaven.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/f/fc/Mde_header.jpg' },
+      { id: 'gate', title: 'Gate of Steiner', artist: 'Kanako Itō', audio: 'music/gate-of-steiner.mp3', cover: 'https://static.wikia.nocookie.net/steins-gate/images/8/8a/Alpha_World_Line.png' }
+    ];
+  
+    const CHARACTER_QUOTES = [
+      { id: 'okabe1', character: 'Rintarō Okabe', quote: 'El Psy Kongroo!', color: '#ff7e00' },
+      { id: 'okabe2', character: 'Rintarō Okabe', quote: 'I am the mad scientist, Hououin Kyouma!', color: '#ff7e00' },
+      { id: 'kurisu1', character: 'Makise Kurisu', quote: 'You idiot! (バカ！)', color: '#ff3366' },
+      { id: 'kurisu2', character: 'Makise Kurisu', quote: 'Time travel is not a joke!', color: '#ff3366' },
+      { id: 'mayuri', character: 'Shiina Mayuri', quote: 'Tuturu~ ☆', color: '#ff99cc' },
+      { id: 'daru', character: 'Hashida Itaru', quote: '2000% confirmed!', color: '#66ccff' },
+      { id: 'suzuha', character: 'Amane Suzuha', quote: 'The time has come!', color: '#66ffcc' },
+      { id: 'moeka', character: 'Kiryuu Moeka', quote: 'FB...', color: '#cc99ff' }
+    ];
+  
+    const AKIHABARA_LOCATIONS = [
+      { id: 'lab', name: 'Future Gadget Laboratory', lat: 35.7038, lng: 139.7731, description: 'The main base of operations for Okabe and his friends', icon: '🏢' },
+      { id: 'radio', name: 'Radio Kaikan', lat: 35.6988, lng: 139.7731, description: 'Famous electronics shopping center in Akihabara', icon: '📻' },
+      { id: 'akihabara', name: 'Akihabara Station', lat: 35.6986, lng: 139.7725, description: 'Main train station in Akihabara district', icon: '🚉' },
+      { id: 'maid', name: 'Maid Cafe', lat: 35.7012, lng: 139.7718, description: 'Where Faris works as a maid', icon: '🍰' },
+      { id: 'shrine', name: 'Kanda Shrine', lat: 35.6956, lng: 139.7708, description: 'Historic shrine near Akihabara', icon: '⛩️' }
+    ];
+  
+    const CHARACTER_PROFILES = [
+      {
+        id: 'okabe',
+        name: 'Rintarō Okabe',
+        alias: 'Hououin Kyouma',
+        age: 18,
+        birthday: 'November 7',
+        role: 'Main Protagonist / Mad Scientist',
+        abilities: ['Time travel theory', 'Leadership', 'Eccentric personality'],
+        backstory: 'A self-proclaimed mad scientist who accidentally discovers time travel. He leads the Future Gadget Laboratory and is determined to protect his friends from the dangers of time manipulation.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/2/26/Rintaro_Okabe_Portrait.png'
+      },
+      {
+        id: 'kurisu',
+        name: 'Makise Kurisu',
+        alias: 'Christina',
+        age: 18,
+        birthday: 'July 25',
+        role: 'Genius Scientist',
+        abilities: ['Neuroscience expertise', 'Brilliant intellect', 'Time travel research'],
+        backstory: 'A prodigious neuroscientist who gets involved with Okabe\'s time travel experiments. She has a complex relationship with her father and plays a crucial role in the time travel conspiracy.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/0/01/Kurisu_Makise_Portrait.png'
+      },
+      {
+        id: 'mayuri',
+        name: 'Shiina Mayuri',
+        alias: 'Mayushii',
+        age: 16,
+        birthday: 'February 1',
+        role: 'Childhood Friend / Cosplayer',
+        abilities: ['Part-time work', 'Cosplay skills', 'Loyal friendship'],
+        backstory: 'Okabe\'s childhood friend who works part-time at a maid cafe. She has a pure heart and serves as the emotional anchor for the group, though she becomes a key figure in the time travel paradox.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/e/e6/Mayuri_Shiina_Portrait.png'
+      },
+      {
+        id: 'daru',
+        name: 'Hashida Itaru',
+        alias: 'Daru',
+        age: 19,
+        birthday: 'January 12',
+        role: 'Super Hacker / Lab Member',
+        abilities: ['Computer hacking', 'Electronics expertise', 'Technical support'],
+        backstory: 'A skilled hacker and Okabe\'s childhood friend who provides technical support for the Future Gadget Laboratory. Despite his perverted nature, he is a reliable member of the team with exceptional computer skills.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/a/ae/Daru_full_profile.png'
+      },
+      {
+        id: 'luka',
+        name: 'Urushibara Luka',
+        alias: 'Ruka',
+        age: 17,
+        birthday: 'December 13',
+        role: 'Part-time Worker / Lab Member',
+        abilities: ['Shrine maiden work', 'Caring nature', 'Emotional support'],
+        backstory: 'A shy and gentle boy who works at a shrine and becomes involved with the laboratory. He has a complex relationship with his gender identity and provides emotional support to the group.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/e/e7/Luka_Urushibara_Portrait.png'
+      },
+      {
+        id: 'faris',
+        name: 'Akiha Rumiho',
+        alias: 'Faris Nyan',
+        age: 17,
+        birthday: 'August 8',
+        role: 'Maid Cafe Worker / Lab Member',
+        abilities: ['Maid skills', 'Customer service', 'Playful personality'],
+        backstory: 'A cheerful girl who works at a maid cafe and joins the laboratory. She has a playful, cat-like personality and brings a lighthearted atmosphere to the group.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/6/6a/Faris_Portrait.png'
+      },
+      {
+        id: 'moeka',
+        name: 'Kiryuu Moeka',
+        alias: 'Shining Finger',
+        age: 20,
+        birthday: 'October 30',
+        role: 'Mysterious Hacker / Lab Member',
+        abilities: ['Hacking skills', 'Silent communication', 'Loyalty to FB'],
+        backstory: 'A quiet and mysterious girl with exceptional hacking skills. She is obsessed with finding IBN 5100 and has a complex past connected to the time travel conspiracy.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/c/c0/Moeka_Kiryu_Portrait.png'
+      },
+      {
+        id: 'suzuha',
+        name: 'Amane Suzuha',
+        alias: 'John Titor',
+        age: 18,
+        birthday: 'May 21',
+        role: 'Time Traveler / Lab Member',
+        abilities: ['Time travel knowledge', 'Combat skills', 'Future technology understanding'],
+        backstory: 'A time traveler from the future who comes to the past to prevent a dystopian future. She has a strong sense of duty and plays a crucial role in the time travel missions.',
+        img: 'https://static.wikia.nocookie.net/steins-gate/images/2/27/Suzuha_Amane_Portrait.png'
+      }
+    ];
+  
+    const GAMES_DATA = [
+      {
+        id: 'original',
+        title: 'Steins;Gate',
+        platform: 'Xbox 360, PC, PS3, PS4, Vita, Switch',
+        release: 'October 15, 2009',
+        description: 'The original visual novel that started the franchise. Features multiple endings and complex time travel mechanics.',
+        features: ['Phone Trigger system', 'Multiple endings', 'Branching storyline', 'Full voice acting'],
+        cover: 'https://static.wikia.nocookie.net/steins-gate/images/2/23/Steins%3Bgate_header.jpg'
+      },
+      {
+        id: 'elite',
+        title: 'Steins;Gate Elite',
+        platform: 'PS4, PS Vita, Switch, PC',
+        release: 'September 20, 2018',
+        description: 'A remake of the original game with fully animated scenes from the anime adaptation.',
+        features: ['Animated cutscenes', 'Updated UI', 'New scenarios', 'Enhanced visuals'],
+        cover: 'https://static.wikia.nocookie.net/steins-gate/images/4/41/0_header.jpg'
+      },
+      {
+        id: 'my',
+        title: 'Steins;Gate: My Darling\'s Embrace',
+        platform: 'PS4, PS Vita, Switch, PC',
+        release: 'June 26, 2019',
+        description: 'A romantic comedy spin-off featuring alternative scenarios and relationships.',
+        features: ['Romance routes', 'Alternative stories', 'Comedy elements', 'New character interactions'],
+        cover: 'https://static.wikia.nocookie.net/steins-gate/images/f/fc/Mde_header.jpg'
+      }
+    ];
+  
+    const ANIME_DATA = {
+      title: 'Steins;Gate',
+      seasons: [
+        {
+          season: 1,
+          episodes: 24,
+          aired: 'April 6, 2011 - September 14, 2011',
+          description: 'The main story following Okabe\'s discovery of time travel and his struggle to save his friends.',
+          opening: 'Hacking to the Gate by Kanako Itō',
+          ending: 'Tokitsukasadoru Jūni no Meiyaku by Yui Sakakibara'
+        },
+        {
+          season: 2,
+          episodes: 23,
+          aired: 'July 11, 2018 - September 26, 2018',
+          description: 'Steins;Gate 0 - An alternative timeline story focusing on Okabe\'s struggle after failing to save Kurisu.',
+          opening: 'Fatima by Kanako Itō',
+          ending: 'Last Game by ZAQ'
+        }
+      ],
+      movies: [
+        {
+          title: 'Steins;Gate: The Movie − Load Region of Déjà Vu',
+          release: 'April 20, 2013',
+          description: 'A sequel to the first season, exploring what happens after Okabe achieves the Steins Gate world line.'
+        }
+      ]
+    };
+  
+    const MANGA_DATA = {
+      series: [
+        {
+          title: 'Steins;Gate',
+          author: 'Nitrosis',
+          volumes: 4,
+          chapters: 24,
+          description: 'The main manga adaptation of the visual novel, following the same story as the original game.'
+        },
+        {
+          title: 'Steins;Gate: Bōkan no Rebellion',
+          author: 'Yomi Sarachi',
+          volumes: 3,
+          chapters: 18,
+          description: 'A spin-off manga focusing on alternative stories and character interactions.'
+        },
+        {
+          title: 'Steins;Gate: Onshū no Braunian Motion',
+          author: 'Kenji Mizuta',
+          volumes: 2,
+          chapters: 12,
+          description: 'Another spin-off exploring different aspects of the Steins;Gate universe.'
+        }
+      ]
+    };
+  
+    const MERCHANDISE_DATA = [
+      {
+        id: 'figures',
+        category: 'Figures & Statues',
+        items: [
+          { name: 'Okabe Rintarou 1/8 Scale Figure', price: '$129.99', img: 'https://via.placeholder.com/150' },
+          { name: 'Makise Kurisu Prize Figure', price: '$39.99', img: 'https://via.placeholder.com/150' },
+          { name: 'Mayuri Shiina Nendoroid', price: '$49.99', img: 'https://via.placeholder.com/150' }
+        ]
+      },
+      {
+        id: 'apparel',
+        category: 'Apparel & Accessories',
+        items: [
+          { name: 'Future Gadget Lab Hoodie', price: '$59.99', img: 'https://via.placeholder.com/150' },
+          { name: 'Steins;Gate T-Shirt', price: '$24.99', img: 'https://via.placeholder.com/150' },
+          { name: 'Divergence Meter Replica', price: '$79.99', img: 'https://via.placeholder.com/150' }
+        ]
+      },
+      {
+        id: 'collectibles',
+        category: 'Collectibles',
+        items: [
+          { name: 'Phone Microwave Replica', price: '$149.99', img: 'https://via.placeholder.com/150' },
+          { name: 'Art Book Collection', price: '$34.99', img: 'https://via.placeholder.com/150' },
+          { name: 'Soundtrack CD Set', price: '$29.99', img: 'https://via.placeholder.com/150' }
+        ]
+      }
     ];
 
     // ──────────────────────────────────────────────
@@ -231,7 +490,7 @@
 
     const DivergenceMeter = ({ target, isGlitching }) => {
       const [displayNumber, setDisplayNumber] = useState("0.000000");
-
+  
       const startGlitch = () => {
         let count = 0;
         const interval = setInterval(() => {
@@ -243,14 +502,14 @@
           }
         }, 70);
       };
-
+  
       useEffect(() => {
         if (isGlitching) startGlitch();
         else if (displayNumber !== target) setDisplayNumber(target);
       }, [isGlitching, target]);
-
+  
       useEffect(() => { startGlitch(); }, []);
-
+  
       return (
         <div className="flex flex-col items-center justify-center my-12 select-none">
           <div className="text-sg-orange text-xs tracking-[0.5em] mb-2 uppercase opacity-70" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
@@ -269,6 +528,800 @@
             <div className="absolute top-0 right-0 w-3 h-3 border-t-2 border-r-2 border-sg-orange opacity-60"></div>
             <div className="absolute bottom-0 left-0 w-3 h-3 border-b-2 border-l-2 border-sg-orange opacity-60"></div>
             <div className="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-sg-orange opacity-60"></div>
+          </div>
+        </div>
+      );
+    };
+  
+    // ──────────────────────────────────────────────
+    // КОМПОНЕНТЫ ДЛЯ НОВЫХ СЕКЦИЙ
+    // ──────────────────────────────────────────────
+  
+    const MusicSection = () => {
+      const [currentTrack, setCurrentTrack] = useState(MUSIC_TRACKS[0]);
+      const [isPlaying, setIsPlaying] = useState(false);
+      const [currentTime, setCurrentTime] = useState(0);
+      const [duration, setDuration] = useState(0);
+      const [volume, setVolume] = useState(0.7);
+      const audioRef = useRef(null);
+  
+      useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+  
+        const updateTime = () => setCurrentTime(audio.currentTime);
+        const updateDuration = () => setDuration(audio.duration);
+        const endedHandler = () => {
+          setIsPlaying(false);
+          setCurrentTime(0);
+        };
+  
+        audio.addEventListener('timeupdate', updateTime);
+        audio.addEventListener('loadedmetadata', updateDuration);
+        audio.addEventListener('ended', endedHandler);
+        audio.volume = volume;
+  
+        return () => {
+          audio.removeEventListener('timeupdate', updateTime);
+          audio.removeEventListener('loadedmetadata', updateDuration);
+          audio.removeEventListener('ended', endedHandler);
+        };
+      }, []);
+  
+      useEffect(() => {
+        const audio = audioRef.current;
+        if (audio) {
+          audio.volume = volume;
+          if (isPlaying) {
+            audio.play().catch(e => console.log('Audio play error:', e));
+          } else {
+            audio.pause();
+          }
+        }
+      }, [isPlaying, currentTrack, volume]);
+  
+      useEffect(() => {
+        if (audioRef.current) {
+          audioRef.current.load();
+          if (isPlaying) {
+            audioRef.current.play().catch(e => console.log('Audio play error:', e));
+          }
+        }
+      }, [currentTrack]);
+  
+      const playTrack = (track) => {
+        setCurrentTrack(track);
+        setIsPlaying(true);
+        setCurrentTime(0);
+      };
+  
+      const togglePlay = () => {
+        setIsPlaying(!isPlaying);
+      };
+  
+      const handleTimeChange = (e) => {
+        const time = parseFloat(e.target.value);
+        setCurrentTime(time);
+        if (audioRef.current) {
+          audioRef.current.currentTime = time;
+        }
+      };
+  
+      const handleVolumeChange = (e) => {
+        const vol = parseFloat(e.target.value);
+        setVolume(vol);
+        if (audioRef.current) {
+          audioRef.current.volume = vol;
+        }
+      };
+  
+      const formatTime = (time) => {
+        if (isNaN(time)) return '0:00';
+        const minutes = Math.floor(time / 60);
+        const seconds = Math.floor(time % 60);
+        return `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+      };
+  
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Iconic Soundtrack</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            The Steins;Gate soundtrack features memorable tracks composed by Takeshi Abo and other artists. The iconic opening theme "Hacking to the Gate" by Kanako Itō has become synonymous with the series.
+          </p>
+  
+          {/* Main Player with Steins;Gate Theming */}
+          <div className="bg-black/60 border-2 border-sg-orange rounded-xl p-6 mb-8 hover:shadow-[0_0_30px_rgba(255,126,0,0.6)] transition-all">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Album Cover */}
+              <div className="lg:col-span-1 flex flex-col items-center">
+                <div className="relative w-64 h-64 mb-4 group">
+                  <div className="absolute inset-0 rounded-full border-4 border-dashed border-sg-orange/40 animate-spin-slow"></div>
+                  <div className="absolute inset-4 rounded-full overflow-hidden border-2 border-sg-orange/60 shadow-[0_0_30px_rgba(255,126,0,0.5)] bg-black avatar-clip">
+                    <img
+                      src={currentTrack.cover}
+                      alt={currentTrack.title}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  {/* Vinyl effect */}
+                  <div className="absolute inset-8 rounded-full bg-gradient-to-br from-black/20 to-transparent"></div>
+                  <div className="absolute inset-12 rounded-full border border-sg-orange/30"></div>
+                </div>
+                <h3 className="text-xl font-bold text-white text-center mb-2">{currentTrack.title}</h3>
+                <p className="text-sg-orange text-center" style={{animation: 'glow-pulse 2s ease-in-out infinite'}}>{currentTrack.artist}</p>
+              </div>
+  
+              {/* Player Controls */}
+              <div className="lg:col-span-2">
+                <audio ref={audioRef} src={currentTrack.audio} preload="auto" />
+  
+                {/* Progress Bar */}
+                <div className="mb-4">
+                  <div className="flex items-center justify-between text-sm text-gray-400 mb-1">
+                    <span>{formatTime(currentTime)}</span>
+                    <span>{formatTime(duration)}</span>
+                  </div>
+                  <input
+                    type="range"
+                    min="0"
+                    max={duration || 0}
+                    value={currentTime}
+                    onChange={handleTimeChange}
+                    className="w-full h-1 bg-gray-700 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #ff7e00 0%, #ff7e00 ${(currentTime / duration) * 100 || 0}%, #374151 ${(currentTime / duration) * 100 || 0}%, #374151 100%)`
+                    }}
+                  />
+                </div>
+  
+                {/* Main Controls */}
+                <div className="flex items-center justify-center space-x-6 mb-6">
+                  <button
+                    onClick={togglePlay}
+                    className="relative w-20 h-20 bg-sg-orange/20 border-2 border-sg-orange rounded-full hover:bg-sg-orange/40 transition-all flex items-center justify-center group"
+                  >
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-br from-sg-orange/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    {isPlaying ? (
+                      <svg className="w-8 h-8 text-sg-orange group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM7 8a1 1 0 012 0v4a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v4a1 1 0 102 0V8a1 1 0 00-1-1z" clipRule="evenodd" />
+                      </svg>
+                    ) : (
+                      <svg className="w-8 h-8 text-sg-orange group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM9.555 7.168A1 1 0 008 8v4a1 1 0 001.555.832l3-2a1 1 0 000-1.664l-3-2z" clipRule="evenodd" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+  
+                {/* Volume Control */}
+                <div className="flex items-center space-x-3 mb-4">
+                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M9.383 3.076A1 1 0 0110 4v12a1 1 0 01-1.617.816L4.617 13H2a1 1 0 01-1-1V8a1 1 0 011-1h2.617l3.766-3.816a1 1 0 011.617.816zM14.657 2.929a1 1 0 011.414 0A9.972 9.972 0 0119 10a9.972 9.972 0 01-2.929 7.071 1 1 0 01-1.414-1.414A7.971 7.971 0 0017 10c0-2.21-.894-4.208-2.343-5.657a1 1 0 010-1.414zm-2.829 2.828a1 1 0 011.415 0A5.983 5.983 0 0115 10a5.984 5.984 0 01-1.757 4.243 1 1 0 01-1.415-1.415A3.984 3.984 0 0013 10a3.983 3.983 0 00-1.172-2.828 1 1 0 010-1.414z" clipRule="evenodd" />
+                  </svg>
+                  <input
+                    type="range"
+                    min="0"
+                    max="1"
+                    step="0.01"
+                    value={volume}
+                    onChange={handleVolumeChange}
+                    className="w-32 h-1 bg-gray-600 rounded-full appearance-none cursor-pointer"
+                    style={{
+                      background: `linear-gradient(to right, #ff7e00 0%, #ff7e00 ${volume * 100}%, #374151 ${volume * 100}%, #374151 100%)`
+                    }}
+                  />
+                  <span className="text-sm text-gray-400 w-8 text-right">{Math.round(volume * 100)}%</span>
+                </div>
+  
+                {/* Audio Visualization */}
+                <div className="h-16 flex items-end justify-center space-x-1 mb-4">
+                  {[...Array(40)].map((_, i) => (
+                    <div
+                      key={i}
+                      className="bg-sg-orange/50 rounded-t-lg transition-all"
+                      style={{
+                        width: '2px',
+                        height: `${Math.random() * 60 + 20}%`,
+                        animation: `pulse ${Math.random() * 1.5 + 0.5}s infinite alternate`
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+  
+          {/* Track List with Enhanced Design */}
+          <div className="bg-black/60 border border-gray-700 rounded-xl p-6 mb-8">
+            <h3 className="text-xl font-bold text-sg-orange mb-4 flex items-center">
+              <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
+              </svg>
+              Track List
+            </h3>
+            <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
+              {MUSIC_TRACKS.map(track => (
+                <div
+                  key={track.id}
+                  onClick={() => playTrack(track)}
+                  className={`flex items-center space-x-3 p-3 rounded-lg cursor-pointer hover:bg-gray-800 transition-all duration-200 ${currentTrack.id === track.id ? 'bg-sg-orange/20 border-2 border-sg-orange shadow-[0_0_15px_rgba(255,126,0,0.3)]' : 'bg-black/40'}`}
+                >
+                  <div className="relative w-16 h-16 flex-shrink-0">
+                    <img src={track.cover} alt={track.title} className="w-full h-full object-cover rounded" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-sg-orange/20 to-transparent rounded"></div>
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium truncate">{track.title}</p>
+                    <p className="text-gray-400 text-sm truncate">{track.artist}</p>
+                  </div>
+                  {currentTrack.id === track.id && isPlaying ? (
+                    <div className="text-sg-orange animate-pulse flex-shrink-0">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M5 4h3v12H5V4zm7 0h3v12h-3V4z"/>
+                      </svg>
+                    </div>
+                  ) : (
+                    <button className="text-sg-orange hover:text-sg-orange/80 flex-shrink-0">
+                      <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M8 5v10l8-5-8-5z"/>
+                      </svg>
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+  
+  
+          {/* Local Files Instruction */}
+          <div className="bg-black/60 border border-blue-500 rounded-xl p-6 mb-6">
+            <h3 className="text-xl font-bold text-blue-400 mb-4 flex items-center">
+              <svg className="w-6 h-6 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2H4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z" clipRule="evenodd" />
+              </svg>
+              How to Add Your Music Files
+            </h3>
+            <div className="text-blue-100 space-y-3">
+              <p>This music player is designed to work with local audio files. To add your Steins;Gate soundtrack:</p>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-3">
+                <h4 className="font-bold text-white mb-2">Instructions:</h4>
+                <ol className="list-decimal list-inside space-y-2 text-sm">
+                  <li>Create a folder named <span className="bg-gray-700 px-1 rounded">music</span> in your project directory</li>
+                  <li>Add your MP3 files with these exact filenames:
+                    <ul className="list-disc list-inside ml-4 mt-1 space-y-1">
+                      <li><span className="font-mono">hacking-to-the-gate.mp3</span></li>
+                      <li><span className="font-mono">sky-of-beginning.mp3</span></li>
+                      <li><span className="font-mono">another-heaven.mp3</span></li>
+                      <li><span className="font-mono">gate-of-steiner.mp3</span></li>
+                    </ul>
+                  </li>
+                  <li>Make sure the files are in MP3 format</li>
+                  <li>Refresh the page after adding the files</li>
+                </ol>
+              </div>
+              <p className="text-sm">The player will automatically load and play your local audio files when they're available in the correct location.</p>
+            </div>
+          </div>
+  
+          {/* Additional Info */}
+          <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-sg-orange mb-4">About the Soundtrack</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+              <div>
+                <p className="mb-3">The Steins;Gate soundtrack is one of the most iconic in anime history. Composed by Takeshi Abo, the music perfectly captures the blend of science fiction, emotion, and suspense that defines the series.</p>
+                <p>The opening theme "Hacking to the Gate" by Kanako Itō has become legendary among fans, with its unique blend of electronic and rock elements.</p>
+              </div>
+              <div>
+                <p className="mb-3">The soundtrack features a mix of electronic, orchestral, and vocal tracks that enhance the time travel themes and emotional moments of the story.</p>
+                <p>Each track is carefully crafted to match the mood of key scenes, from intense action sequences to heartfelt character moments.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+  
+    const QuotesSection = () => {
+      const [randomQuote, setRandomQuote] = useState(CHARACTER_QUOTES[0]);
+  
+      const getRandomQuote = () => {
+        const randomIndex = Math.floor(Math.random() * CHARACTER_QUOTES.length);
+        setRandomQuote(CHARACTER_QUOTES[randomIndex]);
+      };
+  
+      useEffect(() => {
+        const interval = setInterval(getRandomQuote, 10000);
+        return () => clearInterval(interval);
+      }, []);
+  
+      return (
+        <div className="w-full max-w-4xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Famous Quotes</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            Steins;Gate is known for its memorable dialogue and iconic catchphrases. Here are some of the most famous quotes from the characters.
+          </p>
+  
+          {/* Featured Quote */}
+          <div className="bg-black/60 border-2 border-sg-orange rounded-xl p-8 mb-8 text-center">
+            <h3 className="text-xl font-bold text-sg-orange mb-4">Featured Quote</h3>
+            <div className="relative">
+              <div className="absolute -top-8 -left-8 text-6xl text-gray-800 opacity-20">"</div>
+              <div className="absolute -bottom-8 -right-8 text-6xl text-gray-800 opacity-20">"</div>
+              <p className="text-2xl md:text-3xl font-bold text-white mb-4" style={{ color: randomQuote.color, animation: 'glow-pulse 3s ease-in-out infinite' }}>
+                {randomQuote.quote}
+              </p>
+              <p className="text-lg text-gray-300 italic">— {randomQuote.character}</p>
+            </div>
+            <button
+              onClick={getRandomQuote}
+              className="mt-6 bg-sg-orange/20 border border-sg-orange text-sg-orange px-6 py-2 rounded-full hover:bg-sg-orange/40 transition font-bold"
+            >
+              RANDOM QUOTE
+            </button>
+          </div>
+  
+          {/* All Quotes Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {CHARACTER_QUOTES.map(quote => (
+              <div key={quote.id} className="bg-black/60 border border-gray-700 rounded-xl p-6 hover:shadow-[0_0_20px_rgba(255,126,0,0.4)] transition-all">
+                <div className="relative mb-4">
+                  <div className="absolute -top-4 -left-4 text-4xl text-gray-800 opacity-15">"</div>
+                  <p className="text-lg font-bold text-white" style={{ color: quote.color }}>
+                    {quote.quote}
+                  </p>
+                </div>
+                <p className="text-sm text-gray-400 italic text-right">— {quote.character}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    };
+  
+    const MapSection = () => {
+      const [selectedLocation, setSelectedLocation] = useState(AKIHABARA_LOCATIONS[0]);
+  
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Interactive Akihabara Map</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            Explore key locations from Steins;Gate in Akihabara, Tokyo. These places play important roles in the story and character interactions.
+          </p>
+  
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Map */}
+            <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-sg-orange mb-4">Akihabara District</h3>
+              <div className="aspect-video bg-gray-900 rounded-lg overflow-hidden relative">
+                {/* Simple interactive map representation */}
+                <img
+                  src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Akihabara_Electric_Town_12.jpg/640px-Akihabara_Electric_Town_12.jpg"
+                  alt="Akihabara Map"
+                  className="w-full h-full object-cover opacity-70"
+                />
+                <div className="absolute inset-0">
+                  {AKIHABARA_LOCATIONS.map(location => (
+                    <div
+                      key={location.id}
+                      onClick={() => setSelectedLocation(location)}
+                      className="absolute cursor-pointer hover:scale-110 transition-transform"
+                      style={{
+                        left: `${location.lng * 2}%`,
+                        top: `${location.lat * 2}%`,
+                        transform: 'translate(-50%, -50%)'
+                      }}
+                    >
+                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white font-bold shadow-lg ${selectedLocation.id === location.id ? 'bg-sg-orange ring-4 ring-sg-orange/50' : 'bg-blue-500'}`}>
+                        {location.icon}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <p className="text-sm text-gray-400 mt-2 text-center">Click on markers to explore locations</p>
+            </div>
+  
+            {/* Location Info */}
+            <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-sg-orange mb-4">Location Details</h3>
+              <div className="space-y-4">
+                <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-bold text-white mb-2">{selectedLocation.name}</h4>
+                  <p className="text-gray-300 mb-3">{selectedLocation.description}</p>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-2xl">{selectedLocation.icon}</span>
+                    <span className="text-sm text-gray-400">Coordinates: {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}</span>
+                  </div>
+                </div>
+  
+                <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-bold text-sg-orange mb-2">All Locations</h4>
+                  <div className="space-y-2">
+                    {AKIHABARA_LOCATIONS.map(location => (
+                      <div
+                        key={location.id}
+                        onClick={() => setSelectedLocation(location)}
+                        className={`flex items-center space-x-3 p-2 rounded cursor-pointer hover:bg-gray-800 transition ${selectedLocation.id === location.id ? 'bg-sg-orange/20' : ''}`}
+                      >
+                        <span className="text-xl">{location.icon}</span>
+                        <span className={`text-sm ${selectedLocation.id === location.id ? 'text-sg-orange font-bold' : 'text-gray-300'}`}>{location.name}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+  
+    const ProfilesSection = () => {
+      const [selectedProfile, setSelectedProfile] = useState(CHARACTER_PROFILES[0]);
+  
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Character Profiles</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            Detailed information about the main characters of Steins;Gate, including their backgrounds, roles, and abilities.
+          </p>
+  
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Profile Card */}
+            <div className="bg-black/60 border-2 border-sg-orange rounded-xl p-6">
+              <div className="relative w-48 h-48 mx-auto mb-6 group">
+                <div className="absolute inset-0 rounded-full border-4 border-dashed border-sg-orange/40 animate-spin-slow"></div>
+                <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-sg-orange/60 shadow-[0_0_30px_rgba(255,126,0,0.5)] bg-black avatar-clip">
+                  <img
+                    src={selectedProfile.img}
+                    alt={selectedProfile.name}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+  
+              <div className="text-center space-y-3">
+                <h3 className="text-3xl font-bold text-white">{selectedProfile.name}</h3>
+                <p className="text-sg-orange text-lg italic">{selectedProfile.alias}</p>
+                <div className="h-px w-32 bg-gradient-to-r from-transparent via-sg-orange to-transparent mx-auto opacity-60"></div>
+  
+                <div className="grid grid-cols-2 gap-4 mt-6 text-left">
+                  <div>
+                    <p className="text-gray-400 text-sm">Age</p>
+                    <p className="text-white font-bold">{selectedProfile.age}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-400 text-sm">Birthday</p>
+                    <p className="text-white font-bold">{selectedProfile.birthday}</p>
+                  </div>
+                  <div className="col-span-2">
+                    <p className="text-gray-400 text-sm">Role</p>
+                    <p className="text-white font-bold">{selectedProfile.role}</p>
+                  </div>
+                </div>
+  
+                <div className="mt-6">
+                  <h4 className="text-lg font-bold text-sg-orange mb-2">Abilities</h4>
+                  <div className="flex flex-wrap justify-center gap-2">
+                    {selectedProfile.abilities.map((ability, index) => (
+                      <span key={index} className="bg-black/40 border border-gray-700 px-3 py-1 rounded-full text-sm text-gray-300">
+                        {ability}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+  
+            {/* Profile Details */}
+            <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+              <h3 className="text-xl font-bold text-sg-orange mb-4">Backstory</h3>
+              <div className="space-y-4">
+                <p className="text-gray-300 text-sm leading-relaxed">
+                  {selectedProfile.backstory}
+                </p>
+  
+                <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                  <h4 className="text-lg font-bold text-sg-orange mb-2">Character List</h4>
+                  <div className="space-y-2 max-h-96 overflow-y-auto">
+                    {CHARACTER_PROFILES.map(profile => (
+                      <div
+                        key={profile.id}
+                        onClick={() => setSelectedProfile(profile)}
+                        className={`flex items-center space-x-3 p-2 rounded cursor-pointer hover:bg-gray-800 transition ${selectedProfile.id === profile.id ? 'bg-sg-orange/20 border border-sg-orange' : 'bg-black/30'}`}
+                      >
+                        <img src={profile.img} alt={profile.name} className="w-10 h-10 object-cover rounded-full" />
+                        <div>
+                          <p className={`text-sm font-bold ${selectedProfile.id === profile.id ? 'text-sg-orange' : 'text-white'}`}>{profile.name}</p>
+                          <p className="text-xs text-gray-400">{profile.role}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+  
+    const GameSection = () => {
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Steins;Gate Games</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            The Steins;Gate franchise includes several visual novels and spin-offs that expand the story and universe.
+          </p>
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {GAMES_DATA.map(game => (
+              <div key={game.id} className="bg-black/60 border border-gray-700 rounded-xl overflow-hidden hover:shadow-[0_0_20px_rgba(255,126,0,0.4)] transition-all">
+                <div className="relative h-48 overflow-hidden">
+                  <img src={game.cover} alt={game.title} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                </div>
+                <div className="p-4">
+                  <h3 className="text-xl font-bold text-white mb-2">{game.title}</h3>
+                  <p className="text-gray-400 text-sm mb-3">{game.platform}</p>
+                  <p className="text-gray-300 text-sm mb-4">{game.description}</p>
+  
+                  <div className="bg-black/40 border border-gray-600 rounded-lg p-3">
+                    <h4 className="text-sm font-bold text-sg-orange mb-2">Features</h4>
+                    <ul className="list-disc list-inside text-gray-300 text-xs space-y-1">
+                      {game.features.map((feature, index) => (
+                        <li key={index}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+  
+                  <div className="mt-3 text-center">
+                    <span className="bg-sg-orange/20 border border-sg-orange text-sg-orange px-3 py-1 rounded-full text-xs font-bold">
+                      Released: {game.release}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+  
+          {/* Game Features Summary */}
+          <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-sg-orange mb-4">Game Series Features</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4 text-center">
+                <div className="text-3xl mb-2">🎮</div>
+                <h4 className="font-bold text-white mb-2">Visual Novel Gameplay</h4>
+                <p className="text-gray-300 text-sm">Interactive storytelling with multiple endings based on player choices.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4 text-center">
+                <div className="text-3xl mb-2">📱</div>
+                <h4 className="font-bold text-white mb-2">Phone Trigger System</h4>
+                <p className="text-gray-300 text-sm">Unique time travel mechanic using in-game phone messages to alter the past.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4 text-center">
+                <div className="text-3xl mb-2">🎭</div>
+                <h4 className="font-bold text-white mb-2">Multiple Endings</h4>
+                <p className="text-gray-300 text-sm">Branching storylines with different outcomes based on decisions.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4 text-center">
+                <div className="text-3xl mb-2">🎧</div>
+                <h4 className="font-bold text-white mb-2">Full Voice Acting</h4>
+                <p className="text-gray-300 text-sm">Complete Japanese voice acting for all major characters and scenes.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+  
+    const AnimeSection = () => {
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Steins;Gate Anime</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            The Steins;Gate anime adaptation brings the visual novel story to life with stunning animation and voice acting.
+          </p>
+  
+          {/* Seasons */}
+          <div className="mb-12">
+            <h3 className="text-2xl font-bold text-sg-orange mb-6">Anime Seasons</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {ANIME_DATA.seasons.map((season, index) => (
+                <div key={index} className="bg-black/60 border border-gray-700 rounded-xl overflow-hidden">
+                  <div className="p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="text-xl font-bold text-white">Season {season.season}</h4>
+                      <span className="bg-sg-orange/20 border border-sg-orange text-sg-orange px-3 py-1 rounded-full text-sm">{season.episodes} Episodes</span>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-3">Aired: {season.aired}</p>
+                    <p className="text-gray-300 text-sm mb-4">{season.description}</p>
+  
+                    <div className="grid grid-cols-2 gap-4 mt-4">
+                      <div>
+                        <p className="text-gray-400 text-xs mb-1">Opening Theme</p>
+                        <p className="text-white text-sm font-medium">{season.opening}</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400 text-xs mb-1">Ending Theme</p>
+                        <p className="text-white text-sm font-medium">{season.ending}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+  
+          {/* Movies */}
+          <div className="mb-12">
+            <h3 className="text-2xl font-bold text-sg-orange mb-6">Anime Movies</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {ANIME_DATA.movies.map((movie, index) => (
+                <div key={index} className="bg-black/60 border border-gray-700 rounded-xl overflow-hidden">
+                  <div className="p-6">
+                    <h4 className="text-xl font-bold text-white mb-2">{movie.title}</h4>
+                    <p className="text-gray-400 text-sm mb-3">Release Date: {movie.release}</p>
+                    <p className="text-gray-300 text-sm">{movie.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+  
+          {/* Anime Features */}
+          <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-sg-orange mb-4">Anime Adaptation Features</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Faithful Adaptation</h4>
+                <p className="text-gray-300 text-sm">The anime closely follows the original visual novel story, capturing the essence of the game.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Stunning Animation</h4>
+                <p className="text-gray-300 text-sm">High-quality animation by White Fox studio with detailed character designs and backgrounds.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Iconic Soundtrack</h4>
+                <p className="text-gray-300 text-sm">Memorable opening and ending themes that have become fan favorites.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+  
+    const MangaSection = () => {
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Steins;Gate Manga</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            The Steins;Gate manga adaptations bring the story to print format with unique artwork and additional content.
+          </p>
+  
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {MANGA_DATA.series.map((series, index) => (
+              <div key={index} className="bg-black/60 border border-gray-700 rounded-xl overflow-hidden hover:shadow-[0_0_20px_rgba(255,126,0,0.4)] transition-all">
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2">{series.title}</h3>
+                  <p className="text-gray-400 text-sm mb-3">Author: {series.author}</p>
+  
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                      <p className="text-gray-400 text-xs">Volumes</p>
+                      <p className="text-white font-bold">{series.volumes}</p>
+                    </div>
+                    <div>
+                      <p className="text-gray-400 text-xs">Chapters</p>
+                      <p className="text-white font-bold">{series.chapters}</p>
+                    </div>
+                  </div>
+  
+                  <p className="text-gray-300 text-sm mb-4">{series.description}</p>
+  
+                  <div className="bg-black/40 border border-gray-600 rounded-lg p-3">
+                    <h4 className="text-sm font-bold text-sg-orange mb-2">Series Info</h4>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div>
+                        <p className="text-gray-400">Status</p>
+                        <p className="text-white">Completed</p>
+                      </div>
+                      <div>
+                        <p className="text-gray-400">Genre</p>
+                        <p className="text-white">Sci-Fi, Thriller</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+  
+          {/* Manga Features */}
+          <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-sg-orange mb-4">Manga Adaptation Features</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Unique Artwork</h4>
+                <p className="text-gray-300 text-sm">Each manga series features distinct art styles that bring the Steins;Gate universe to life in different ways.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Expanded Content</h4>
+                <p className="text-gray-300 text-sm">Manga adaptations include additional scenes, character interactions, and alternative storylines not found in the original game.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Spin-off Stories</h4>
+                <p className="text-gray-300 text-sm">Various spin-off manga explore different aspects of the characters and universe, providing deeper insights into the Steins;Gate world.</p>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Collectible Format</h4>
+                <p className="text-gray-300 text-sm">Manga volumes are popular collectibles for fans, featuring high-quality prints and bonus content.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    };
+  
+    const MerchandiseSection = () => {
+      return (
+        <div className="w-full max-w-6xl mx-auto px-4 py-8">
+          <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Steins;Gate Merchandise</h2>
+          <p className="text-gray-300 text-center mb-12 max-w-3xl mx-auto">
+            Official Steins;Gate merchandise and collectibles for fans to enjoy and collect.
+          </p>
+  
+          <div className="space-y-12">
+            {MERCHANDISE_DATA.map(category => (
+              <div key={category.id} className="bg-black/60 border border-gray-700 rounded-xl p-6">
+                <h3 className="text-2xl font-bold text-sg-orange mb-6">{category.category}</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {category.items.map((item, index) => (
+                    <div key={index} className="bg-black/40 border border-gray-600 rounded-lg overflow-hidden hover:shadow-[0_0_20px_rgba(255,126,0,0.4)] transition-all">
+                      <div className="h-48 bg-gray-800 flex items-center justify-center">
+                        <img src={item.img} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="p-4">
+                        <h4 className="text-lg font-bold text-white mb-2">{item.name}</h4>
+                        <p className="text-sg-orange font-bold mb-3">{item.price}</p>
+                        <button className="w-full bg-sg-orange/20 border border-sg-orange text-sg-orange py-2 rounded hover:bg-sg-orange/40 transition font-bold text-sm">
+                          VIEW DETAILS
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+  
+          {/* Merchandise Info */}
+          <div className="mt-12 bg-black/60 border border-gray-700 rounded-xl p-6">
+            <h3 className="text-xl font-bold text-sg-orange mb-4">Official Merchandise Information</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Where to Buy</h4>
+                <p className="text-gray-300 text-sm">Official Steins;Gate merchandise is available through various retailers including:</p>
+                <ul className="list-disc list-inside text-gray-300 text-sm mt-2 space-y-1">
+                  <li>AmiAmi</li>
+                  <li>Good Smile Company</li>
+                  <li>Animate</li>
+                  <li>Amazon Japan</li>
+                  <li>Official Steins;Gate store</li>
+                </ul>
+              </div>
+              <div className="bg-black/40 border border-gray-600 rounded-lg p-4">
+                <h4 className="font-bold text-white mb-2">Collectibles</h4>
+                <p className="text-gray-300 text-sm">Popular collectible items include:</p>
+                <ul className="list-disc list-inside text-gray-300 text-sm mt-2 space-y-1">
+                  <li>Scale figures and Nendoroids</li>
+                  <li>Replica props and gadgets</li>
+                  <li>Art books and soundtracks</li>
+                  <li>Apparel and accessories</li>
+                  <li>Limited edition items</li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       );
@@ -327,6 +1380,8 @@
         return saved ? JSON.parse(saved) : LAB_MEMBERS[0];
       });
       const [dmailText, setDmailText] = useState("");
+      const [activeSection, setActiveSection] = useState('home');
+      const [isMenuOpen, setIsMenuOpen] = useState(false);
 
       useEffect(() => {
         localStorage.setItem('labMember', JSON.stringify(selectedMember));
@@ -368,100 +1423,441 @@
           <Particles />
           <Scanlines />
           <GearsBackground />
+          <div className="fixed inset-0 z-5 pointer-events-none static-noise opacity-20"></div>
 
           {/* Пасхалка от любого члена */}
           <LabMemberEasterEgg />
 
-          <main className={`relative z-10 flex-grow flex flex-col items-center justify-start pt-12 pb-32 transition-opacity duration-1500 ease-in-out ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-            <header className="w-full max-w-4xl px-6 flex justify-between items-center mb-6 opacity-70">
-              <div className="flex items-center space-x-3 text-sm text-sg-orange border border-sg-orange/40 px-4 py-2 rounded bg-black/50">
-                <Terminal size={16} />
-                <span>LAB_MEM_001_SYSTEM</span>
-              </div>
-              <div className="text-sm text-gray-500">{new Date().toISOString().split('T')[0]}</div>
-            </header>
-
-            <DivergenceMeter target={currentDivergence} isGlitching={isGlitching} />
-
-            <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-8">
-              <div className="relative w-48 h-48 mx-auto mb-6 group">
-                <div className="absolute inset-0 rounded-full border-4 border-dashed border-sg-orange/40 animate-spin-slow"></div>
-                <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-sg-orange/60 shadow-[0_0_30px_rgba(255,126,0,0.5)] bg-black avatar-clip">
-                  <img 
-                    src={selectedMember.img} 
-                    alt={selectedMember.name} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <button
-                  onClick={nextMember}
-                  className="absolute -bottom-2 -right-2 bg-black border-2 border-sg-orange rounded-full p-2 hover:bg-sg-orange/20 transition z-20 shadow-lg"
-                  title="Сменить члена лаборатории"
-                >
-                  <RefreshCw size={20} className="text-sg-orange" />
-                </button>
-              </div>
-
-              <div className="text-center space-y-4 mb-10">
-                <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.7)]">
-                  {selectedMember.name}
-                </h1>
-                <p className="text-sg-orange text-xl md:text-2xl tracking-widest uppercase font-bold" style={{ color: selectedMember.color, animation: 'glow-pulse 3s ease-in-out infinite' }}>
-                  {selectedMember.title}
-                </p>
-                <div className="h-px w-32 bg-gradient-to-r from-transparent via-sg-orange to-transparent mx-auto opacity-60"></div>
-                <p className="text-gray-300 text-lg leading-relaxed max-w-lg mx-auto px-4">
-                   Исследователь временных линий. Любитель попиздеть, игр и кодинга. Добро пожаловать в Лабораторию Гаджетов Будущего в Мировой Линии {currentDivergence}..
-                </p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mt-16">
-                {SOCIAL_LINKS.map(link => (
-                  <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
-                    className="group relative block p-6 border-2 border-gray-700 hover:border-sg-orange transition-all duration-300 rounded-xl bg-black/50 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(255,126,0,0.4)]">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-5">
-                        <div className="p-3 rounded-xl bg-black/60 border border-gray-700 group-hover:border-sg-orange group-hover:bg-sg-orange/10 text-gray-300 group-hover:text-sg-orange transition-all duration-300">
-                          <link.icon size={28} />
-                        </div>
-                        <span className="text-2xl font-bold text-gray-200 group-hover:text-white tracking-wide">{link.title}</span>
-                      </div>
-                      <ExternalLink size={20} className="text-gray-600 group-hover:text-sg-orange transition-colors" />
+          {/* Navigation Menu */}
+          <nav className="fixed top-0 left-0 right-0 z-40 bg-black/80 backdrop-blur-md border-b border-gray-800">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-between h-16">
+                <div className="flex items-center">
+                  <div className="flex-shrink-0 flex items-center">
+                    <Terminal className="h-8 w-8 text-sg-orange" />
+                    <span className="ml-2 text-xl font-bold text-white">Steins;Gate</span>
+                  </div>
+                  <div className="hidden md:block ml-10">
+                    <div className="flex items-baseline space-x-4">
+                      {[
+                        { id: 'home', name: 'Home', icon: Home },
+                        { id: 'about', name: 'About', icon: Info },
+                        { id: 'gallery', name: 'Gallery', icon: Image },
+                        { id: 'timeline', name: 'Timeline', icon: Clock },
+                        { id: 'music', name: 'Music', icon: Music },
+                        { id: 'quotes', name: 'Quotes', icon: MessageSquare },
+                        { id: 'map', name: 'Map', icon: Map },
+                        { id: 'profiles', name: 'Profiles', icon: Users },
+                        { id: 'game', name: 'Game', icon: Gamepad2 },
+                        { id: 'anime', name: 'Anime', icon: Tv },
+                        { id: 'manga', name: 'Manga', icon: Book }
+                      ].map((item) => (
+                        <button
+                          key={item.id}
+                          onClick={() => setActiveSection(item.id)}
+                          className={`px-3 py-2 rounded-md text-sm font-medium flex items-center space-x-2 ${activeSection === item.id ? 'bg-sg-orange/20 text-sg-orange border border-sg-orange' : 'text-gray-300 hover:text-white hover:bg-gray-700'} nav-item`}
+                        >
+                          <item.icon className="h-4 w-4" />
+                          <span>{item.name}</span>
+                        </button>
+                      ))}
                     </div>
-                  </a>
-                ))}
-              </div>
-
-              <div className="mt-20 w-full max-w-md mx-auto border-4 border-gray-800 rounded-xl bg-black/80 p-6 backdrop-blur-md shadow-[0_0_30px_rgba(255,126,0,0.3)]">
-                <div className="flex items-center gap-3 mb-4 text-sg-orange">
-                  <Phone size={28} />
-                  <h3 className="text-xl font-bold">Send D-Mail</h3>
+                  </div>
                 </div>
-                <input 
-                  type="text" 
-                  value={dmailText}
-                  onChange={e => setDmailText(e.target.value)}
-                  placeholder="Message to the past..."
-                  className="w-full bg-black/60 border border-gray-700 rounded px-4 py-3 text-gray-300 focus:border-sg-orange outline-none transition mb-4"
-                />
-                <button 
-                  onClick={() => { if (dmailText.trim()) { timeLeap(); setDmailText(""); } }}
-                  className="w-full bg-sg-orange/20 border-2 border-sg-orange text-sg-orange py-3 rounded hover:bg-sg-orange/40 transition font-bold tracking-wider"
-                >
-                  SEND TO PAST
-                </button>
-              </div>
-
-              <div className="mt-20 text-center">
-                <p className="text-sm text-gray-500 mb-3">Operation Skuld Status: <span className="text-sg-orange">Active</span></p>
-                <p className="text-3xl md:text-4xl font-bold text-sg-orange tracking-widest" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
-                  EL PSY KONGROO
-                </p>
+                <div className="-mr-2 flex md:hidden">
+                  <button
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                    className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
+                  >
+                    <span className="sr-only">Open main menu</span>
+                    {isMenuOpen ? <X className="block h-6 w-6" /> : <Menu className="block h-6 w-6" />}
+                  </button>
+                </div>
               </div>
             </div>
+
+            {/* Mobile menu */}
+            {isMenuOpen && (
+              <div className="md:hidden">
+                <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+                  {[
+                    { id: 'home', name: 'Home', icon: Home },
+                    { id: 'about', name: 'About', icon: Info },
+                    { id: 'gallery', name: 'Gallery', icon: Image },
+                    { id: 'timeline', name: 'Timeline', icon: Clock }
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => { setActiveSection(item.id); setIsMenuOpen(false); }}
+                      className={`block px-3 py-2 rounded-md text-base font-medium w-full text-left ${activeSection === item.id ? 'bg-sg-orange/20 text-sg-orange border border-sg-orange' : 'text-gray-300 hover:text-white hover:bg-gray-700'}`}
+                    >
+                      <div className="flex items-center space-x-2">
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.name}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </nav>
+
+          <main className={`relative z-10 flex-grow flex flex-col items-center justify-start pt-24 pb-32 transition-opacity duration-1500 ease-in-out ${showContent ? 'opacity-100' : 'opacity-0'} screen-flicker`}>
+            {activeSection === 'home' && (
+              <div className="section-transition">
+                <header className="w-full max-w-4xl px-6 flex justify-between items-center mb-6 opacity-70">
+                  <div className="flex items-center space-x-3 text-sm text-sg-orange border border-sg-orange/40 px-4 py-2 rounded bg-black/50">
+                    <Terminal size={16} />
+                    <span>LAB_MEM_001_SYSTEM</span>
+                  </div>
+                  <div className="text-sm text-gray-500">{new Date().toISOString().split('T')[0]}</div>
+                </header>
+
+                <DivergenceMeter target={currentDivergence} isGlitching={isGlitching} />
+
+                <div className="relative z-10 w-full max-w-2xl mx-auto px-4 py-8">
+                  <div className="relative w-48 h-48 mx-auto mb-6 group">
+                    <div className="absolute inset-0 rounded-full border-4 border-dashed border-sg-orange/40 animate-spin-slow"></div>
+                    <div className="absolute inset-0 rounded-full overflow-hidden border-2 border-sg-orange/60 shadow-[0_0_30px_rgba(255,126,0,0.5)] bg-black avatar-clip">
+                      <img
+                        src={selectedMember.img}
+                        alt={selectedMember.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <button
+                      onClick={nextMember}
+                      className="absolute -bottom-2 -right-2 bg-black border-2 border-sg-orange rounded-full p-2 hover:bg-sg-orange/20 transition z-20 shadow-lg"
+                      title="Сменить члена лаборатории"
+                    >
+                      <RefreshCw size={20} className="text-sg-orange" />
+                    </button>
+                  </div>
+
+                  <div className="text-center space-y-4 mb-10">
+                    <h1 className="text-5xl md:text-7xl font-bold text-white tracking-tighter drop-shadow-[0_0_10px_rgba(255,255,255,0.7)] flicker-text">
+                      {selectedMember.name}
+                    </h1>
+                    <p className="text-sg-orange text-xl md:text-2xl tracking-widest uppercase font-bold" style={{ color: selectedMember.color, animation: 'glow-pulse 3s ease-in-out infinite' }}>
+                      {selectedMember.title}
+                    </p>
+                    <div className="h-px w-32 bg-gradient-to-r from-transparent via-sg-orange to-transparent mx-auto opacity-60"></div>
+                    <p className="text-gray-300 text-lg leading-relaxed max-w-lg mx-auto px-4">
+                      Исследователь временных линий. Любитель попиздеть, игр и кодинга. Добро пожаловать в Лабораторию Гаджетов Будущего в Мировой Линии {currentDivergence}..
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-2xl mx-auto mt-16">
+                    {SOCIAL_LINKS.map(link => (
+                      <a key={link.id} href={link.url} target="_blank" rel="noopener noreferrer"
+                        className="group relative block p-6 border-2 border-gray-700 hover:border-sg-orange transition-all duration-300 rounded-xl bg-black/50 backdrop-blur-sm hover:shadow-[0_0_20px_rgba(255,126,0,0.4)]">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-5">
+                            <div className="p-3 rounded-xl bg-black/60 border border-gray-700 group-hover:border-sg-orange group-hover:bg-sg-orange/10 text-gray-300 group-hover:text-sg-orange transition-all duration-300">
+                              <link.icon size={28} />
+                            </div>
+                            <span className="text-2xl font-bold text-gray-200 group-hover:text-white tracking-wide">{link.title}</span>
+                          </div>
+                          <ExternalLink size={20} className="text-gray-600 group-hover:text-sg-orange transition-colors" />
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+
+                  <div className="mt-20 w-full max-w-md mx-auto border-4 border-gray-800 rounded-xl bg-black/80 p-6 backdrop-blur-md shadow-[0_0_30px_rgba(255,126,0,0.3)]">
+                    <div className="flex items-center gap-3 mb-4 text-sg-orange">
+                      <Phone size={28} />
+                      <h3 className="text-xl font-bold">Send D-Mail</h3>
+                    </div>
+                    <input
+                      type="text"
+                      value={dmailText}
+                      onChange={e => setDmailText(e.target.value)}
+                      placeholder="Message to the past..."
+                      className="w-full bg-black/60 border border-gray-700 rounded px-4 py-3 text-gray-300 focus:border-sg-orange outline-none transition mb-4"
+                    />
+                    <button
+                      onClick={() => { if (dmailText.trim()) { timeLeap(); setDmailText(""); document.getElementById('buttonSound').play(); } }}
+                      className="w-full bg-sg-orange/20 border-2 border-sg-orange text-sg-orange py-3 rounded hover:bg-sg-orange/40 transition font-bold tracking-wider"
+                    >
+                      SEND TO PAST
+                    </button>
+                  </div>
+
+                  <div className="mt-20 text-center">
+                    <p className="text-sm text-gray-500 mb-3">Operation Skuld Status: <span className="text-sg-orange">Active</span></p>
+                    <p className="text-3xl md:text-4xl font-bold text-sg-orange tracking-widest" style={{animation: 'glow-pulse 4s ease-in-out infinite'}}>
+                      EL PSY KONGROO
+                    </p>
+                  </div>
+                  <div className="mt-12 w-full max-w-md mx-auto border-2 border-gray-700 rounded-xl bg-black/60 p-4 backdrop-blur-md">
+                    <h3 className="text-lg font-bold text-sg-orange mb-3">Time Line Info</h3>
+                    <p className="text-gray-300 text-sm">Current Divergence: <span className="text-sg-orange">{currentDivergence}</span></p>
+                    <p className="text-gray-300 text-sm mt-1">World Line: <span className="text-sg-orange">Alpha</span></p>
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-sg-orange to-transparent my-3 opacity-60"></div>
+                    <p className="text-gray-400 text-xs">Last Update: {new Date().toLocaleTimeString()}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+           
+            {activeSection === 'about' && (
+              <div className="w-full max-w-4xl mx-auto px-4 py-8">
+                <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">About Steins;Gate</h2>
+                <div className="prose prose-invert max-w-none text-gray-300 space-y-6">
+                  <p>
+                    Steins;Gate is a Japanese science fiction visual novel developed by 5pb. and Nitroplus. It is the second game in the Science Adventure series, following Chaos;Head. The game was originally released for the Xbox 360 in 2009, with ports for other platforms following later.
+                  </p>
+                  <p>
+                    The story follows Rintarō Okabe, a self-proclaimed "mad scientist" who runs the "Future Gadget Laboratory" in Akihabara, Tokyo. Along with his friends, he accidentally invents a time machine using a microwave oven and a cell phone, which allows them to send messages to the past. This discovery leads them into a complex web of conspiracy, time travel, and alternate realities.
+                  </p>
+                  <p>
+                    The game explores themes of time travel, causality, and the consequences of altering the past. It features multiple endings based on the player's choices, with the true ending revealing the full extent of the conspiracy and the characters' struggles to change their fate.
+                  </p>
+                  <div className="bg-black/60 border border-gray-700 rounded-xl p-6">
+                    <h3 className="text-xl font-bold text-sg-orange mb-4">Key Features</h3>
+                    <ul className="list-disc list-inside space-y-2 text-gray-300">
+                      <li>Branching storyline with multiple endings</li>
+                      <li>Unique "Phone Trigger" system for time travel</li>
+                      <li>Rich character development and emotional storytelling</li>
+                      <li>Exploration of scientific theories and concepts</li>
+                      <li>Memorable soundtrack and voice acting</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            )}
+           
+            {activeSection === 'gallery' && (
+              <div className="w-full max-w-6xl mx-auto px-4 py-8">
+                <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">Character Gallery</h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {LAB_MEMBERS.map(member => (
+                    <div key={member.id} className="bg-black/60 border border-gray-700 rounded-xl overflow-hidden hover:shadow-[0_0_20px_rgba(255,126,0,0.4)] transition-all duration-300">
+                      <div className="relative h-64 overflow-hidden">
+                        <img src={member.img} alt={member.name} className="w-full h-full object-cover" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
+                        <div className="absolute bottom-0 left-0 right-0 p-4">
+                          <h3 className="text-xl font-bold text-white" style={{ color: member.color }}>{member.name}</h3>
+                          <p className="text-sm text-gray-300 truncate">{member.title}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+           
+            {activeSection === 'timeline' && (
+              <div className="w-full max-w-4xl mx-auto px-4 py-8">
+                <h2 className="text-4xl font-bold text-white mb-8 text-center flicker-text">World Lines & Key Events</h2>
+                 
+                {/* Alpha World Line */}
+                <div className="mb-12">
+                  <div className="bg-black/60 border-2 border-sg-orange rounded-xl p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-sg-orange">Alpha World Line (1.048596)</h2>
+                      <span className="bg-sg-orange/20 text-sg-orange px-3 py-1 rounded-full text-sm">Divergence: 1.048596</span>
+                    </div>
+                    <img src="https://static.wikia.nocookie.net/steins-gate/images/8/8a/Alpha_World_Line.png" alt="Alpha World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
+                    <p className="text-gray-300 mb-4">The Alpha Attractor Field is a world line where SERN's dystopian rule is established in 2036. This timeline is characterized by advanced technology and a world where time travel is controlled by SERN.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-sg-orange mb-2">Key Events</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>SERN successfully develops time machine</li>
+                          <li>Dystopian regime established in 2036</li>
+                          <li>Okabe's resistance against SERN</li>
+                          <li>Mayuri's death in 2010</li>
+                        </ul>
+                      </div>
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-sg-orange mb-2">Characteristics</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Advanced technology</li>
+                          <li>SERN's total control</li>
+                          <li>Time travel experiments</li>
+                          <li>High divergence meter readings</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                 
+                {/* Beta World Line */}
+                <div className="mb-12">
+                  <div className="bg-black/60 border-2 border-blue-500 rounded-xl p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-blue-400">Beta World Line (1.129848)</h2>
+                      <span className="bg-blue-500/20 text-blue-400 px-3 py-1 rounded-full text-sm">Divergence: 1.129848</span>
+                    </div>
+                    <img src="https://static.wikia.nocookie.net/steins-gate/images/5/5a/Beta_World_Line.png" alt="Beta World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
+                    <p className="text-gray-300 mb-4">The Beta Attractor Field is a world line where World War III occurs in 2033. This timeline is marked by global conflict and destruction, with Russia launching a nuclear strike.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-blue-400 mb-2">Key Events</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>World War III in 2033</li>
+                          <li>Russia's nuclear strike</li>
+                          <li>Global destruction</li>
+                          <li>Kurisu's survival</li>
+                        </ul>
+                      </div>
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-blue-400 mb-2">Characteristics</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Global conflict</li>
+                          <li>Nuclear warfare</li>
+                          <li>High casualty rates</li>
+                          <li>Dystopian aftermath</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                 
+                {/* Gamma World Line */}
+                <div className="mb-12">
+                  <div className="bg-black/60 border-2 border-green-500 rounded-xl p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-green-400">Gamma World Line (2.615074)</h2>
+                      <span className="bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-sm">Divergence: 2.615074</span>
+                    </div>
+                    <img src="https://static.wikia.nocookie.net/steins-gate/images/3/3a/Gamma_World_Line.png" alt="Gamma World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
+                    <p className="text-gray-300 mb-4">The Gamma Attractor Field is a world line where the Committee of 300 rules the world. This timeline is characterized by a secret organization controlling global events.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-green-400 mb-2">Key Events</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Committee of 300's rule</li>
+                          <li>Global conspiracy</li>
+                          <li>Secret experiments</li>
+                          <li>Alternative timeline</li>
+                        </ul>
+                      </div>
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-green-400 mb-2">Characteristics</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Secret organization</li>
+                          <li>Global control</li>
+                          <li>Conspiracy theories</li>
+                          <li>Alternative history</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                 
+                {/* Delta World Line */}
+                <div className="mb-12">
+                  <div className="bg-black/60 border-2 border-purple-500 rounded-xl p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-purple-400">Delta World Line (3.019430)</h2>
+                      <span className="bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full text-sm">Divergence: 3.019430</span>
+                    </div>
+                    <img src="https://static.wikia.nocookie.net/steins-gate/images/6/6a/Delta_World_Line.png" alt="Delta World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
+                    <p className="text-gray-300 mb-4">The Delta Attractor Field is a world line where the future gadget lab members live peaceful lives. This timeline is marked by stability and the absence of major conflicts.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-purple-400 mb-2">Key Events</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Peaceful timeline</li>
+                          <li>Stable world</li>
+                          <li>No major conflicts</li>
+                          <li>Happy endings</li>
+                        </ul>
+                      </div>
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-purple-400 mb-2">Characteristics</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Stability</li>
+                          <li>Peace</li>
+                          <li>Prosperity</li>
+                          <li>Happy lives</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                 
+                {/* Omega World Line */}
+                <div className="mb-12">
+                  <div className="bg-black/60 border-2 border-red-500 rounded-xl p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-red-400">Omega World Line (-0.275349)</h2>
+                      <span className="bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-sm">Divergence: -0.275349</span>
+                    </div>
+                    <img src="https://static.wikia.nocookie.net/steins-gate/images/7/7a/Omega_World_Line.png" alt="Omega World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
+                    <p className="text-gray-300 mb-4">The Omega Attractor Field is a world line where the future gadget lab members face tragic endings. This timeline is marked by loss and despair.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-red-400 mb-2">Key Events</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Tragic endings</li>
+                          <li>Loss and despair</li>
+                          <li>Failed missions</li>
+                          <li>Dark timeline</li>
+                        </ul>
+                      </div>
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-red-400 mb-2">Characteristics</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Tragedy</li>
+                          <li>Despair</li>
+                          <li>Loss</li>
+                          <li>Darkness</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                 
+                {/* Steins Gate World Line */}
+                <div className="mb-12">
+                  <div className="bg-black/60 border-2 border-yellow-500 rounded-xl p-6 mb-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-2xl font-bold text-yellow-400">Steins Gate World Line (1.048596)</h2>
+                      <span className="bg-yellow-500/20 text-yellow-400 px-3 py-1 rounded-full text-sm">Divergence: 1.048596</span>
+                    </div>
+                    <img src="https://static.wikia.nocookie.net/steins-gate/images/4/4a/Steins_Gate_World_Line.png" alt="Steins Gate World Line" className="w-full h-48 object-cover rounded-lg mb-4" />
+                    <p className="text-gray-300 mb-4">The Steins Gate is the ideal world line where all conflicts are resolved, and everyone lives happily. This timeline is the ultimate goal of Okabe's journey.</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-yellow-400 mb-2">Key Events</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>All conflicts resolved</li>
+                          <li>Happy endings</li>
+                          <li>Peaceful world</li>
+                          <li>Ultimate goal</li>
+                        </ul>
+                      </div>
+                      <div className="bg-black/40 border border-gray-700 rounded-lg p-4">
+                        <h4 className="text-lg font-bold text-yellow-400 mb-2">Characteristics</h4>
+                        <ul className="list-disc list-inside text-gray-300 space-y-1">
+                          <li>Peace</li>
+                          <li>Happiness</li>
+                          <li>Resolution</li>
+                          <li>Ideal world</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {activeSection === 'music' && <MusicSection />}
+            {activeSection === 'quotes' && <QuotesSection />}
+            {activeSection === 'map' && <MapSection />}
+            {activeSection === 'profiles' && <ProfilesSection />}
+            {activeSection === 'game' && <GameSection />}
+            {activeSection === 'anime' && <AnimeSection />}
+            {activeSection === 'manga' && <MangaSection />}
           </main>
 
-          <div className="fixed bottom-8 right-8 z-40 cursor-pointer group" onClick={timeLeap}>
+          <audio id="timeLeapSound" src="https://www.myinstants.com/media/sounds/glitch-sound-effect_FugN82U.mp3" preload="auto" />
+          <audio id="buttonSound" src="https://www.myinstants.com/media/sounds/pop-sound-effect_AsEdnw2.mp3" preload="auto" />
+          <div className="fixed bottom-8 right-8 z-40 cursor-pointer group" onClick={() => { timeLeap(); document.getElementById('timeLeapSound').play(); }}>
             <img src={MICROWAVE_IMG} alt="Phone Microwave" className="w-40 h-40 object-contain drop-shadow-2xl group-hover:animate-pulse group-hover:shadow-[0_0_50px_rgba(255,126,0,0.9)] transition-all duration-500" />
             <p className="text-center text-sg-orange text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity">Activate Time Leap</p>
           </div>
